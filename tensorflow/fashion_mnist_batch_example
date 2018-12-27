@@ -22,7 +22,7 @@ import keras
 log = logging.getLogger(__name__)
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
 
-EPOCH_SIZE = 50
+EPOCH_SIZE = 200
 
 
 def example():
