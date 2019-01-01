@@ -1,4 +1,4 @@
-# How to use tf.train.SessionRunHook
+# How to use TensorFlow's tf.train.SessionRunHook
 by Hide Inada
 
 I was looking at CIFAR10 example code and saw that they are subclassing tf.train.SessionRunHook to create a
