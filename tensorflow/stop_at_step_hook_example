@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+"""
+An example code to demo the use of tf.train.StopAtStepHook
+
+Credit
+------
+Regarding a way to increment global_step, I referenced MattClimb's answer on StackOverFlow:
+https://stackoverflow.com/questions/39671956/how-to-increment-a-variable-in-tensorflow
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+import tensorflow as tf
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+
+def example():
+    """An example code.
+    """
+    tf.reset_default_graph()
+    gs = tf.train.get_or_create_global_step()
+
+    with tf.variable_scope("vs1") as scope:
+        a = tf.get_variable("a", dtype=tf.float32, shape=[], initializer=tf.constant_initializer(0))
+        b = tf.Variable(0, "b")
+
+        inc_a = tf.assign(a, a + 2)
+        inc_b = tf.assign(b, b + 10)
+
+        inc_gs = tf.assign(gs, gs + 1)
+
+    init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
+
+    with tf.train.MonitoredTrainingSession(hooks=[tf.train.StopAtStepHook(last_step=3)]) as s:
+
+        s.run(init_op)  # Actually assign initial value to variables
+
+        for i in range(5):  # Because last_step is set to 3 i StepAtStepHook, it will loop only 3 times instead of 5!
+            if (s.should_stop()):
+                break
+
+            a_val, b_val, gs_val = s.run([inc_a, inc_b, inc_gs])
+            print("[%d] a: %d, b: %d, gs: %d" % (i, a_val, b_val, gs_val))
+
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
