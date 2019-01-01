@@ -93,8 +93,11 @@ MySessionRunHook.end() called
 ```
 
 Based on this, the sequence is the following:
-1. MySessionRunHook.begin()
-1. MySessionRunHook.after_create_session()
-1. MySessionRunHook.before_run()
-1. MySessionRunHook.after_run()
-1. MySessionRunHook.end()
+
+|---|---|---|
+
+|1.| MySessionRunHook.begin() | |
+|1.| MySessionRunHook.after_create_session() | |
+|1.| MySessionRunHook.before_run() | |
+|1.| MySessionRunHook.after_run() | |
+|1.| MySessionRunHook.end() | |
