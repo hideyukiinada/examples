@@ -3,7 +3,7 @@ by Hide Inada
 
 I was looking at CIFAR10 example code and saw that they are subclassing tf.train.SessionRunHook to create a
 custom class called  _LoggerHook class to log events related to sessions.
-There is a [Stack Overflow page](https://stackoverflow.com/questions/45532365/is-there-any-tutorial-for-tf-train-sessionrunhook) where you can get the general idea, but I wanted to have a crispier understanding regarding how it works, so I created an example doc and here is the output. 
+There is a [Stack Overflow page](https://stackoverflow.com/questions/45532365/is-there-any-tutorial-for-tf-train-sessionrunhook) where you can get the general idea, but I wanted to have a crispier understanding regarding how it works, so I created an example script.  Here is the relevant part of the script and output of the script: 
 
 ## Code
 ```
