@@ -1,8 +1,67 @@
-I was looking at CIFAR10 example code and saw that they are subclassing tf.train.SessionRunHook to create a
-custom class called  _LoggerHook class to log events related to sessions.
-I wasn't really sure how it works, so I created an example doc and here is the output. 
+# How to use TensorFlow's tf.train.SessionRunHook
+by Hide Inada
 
-Output
+I was looking at TensorFlow's [CIFAR10 example code](https://github.com/tensorflow/models/blob/master/tutorials/image/cifar10/cifar10_train.py) and saw that they are subclassing [tf.train.SessionRunHook](https://www.tensorflow.org/api_docs/python/tf/train/SessionRunHook) to create a
+custom class called  _LoggerHook class to log events related to sessions.
+There is a [Stack Overflow page](https://stackoverflow.com/questions/45532365/is-there-any-tutorial-for-tf-train-sessionrunhook) where you can get the general idea, but I wanted to have a crispier understanding regarding how it works, so I created [a simple example script](https://github.com/hideyukiinada/examples/blob/master/tensorflow/session_run_hook_example).  Here is the relevant part of the script and output of the script: 
+
+## Code
+```
+
+class MySessionRunHook(tf.train.SessionRunHook):
+    def after_create_session(self, session, coord):
+        print("MySessionRunHook.after_create_session() called")
+
+    def begin(self):
+        print("MySessionRunHook.begin() called")
+
+    def end(self, session):
+        print("MySessionRunHook.end() called")
+
+    def before_run(self, run_context):
+        print("MySessionRunHook.before_run() called")
+
+    def after_run(self, run_context, run_values):
+        print("MySessionRunHook.after_run() called")
+
+
+def example():
+    """An example code.
+    """
+    tf.reset_default_graph()
+
+    with tf.variable_scope("vs1") as scope:
+        a = tf.get_variable("a", [2, 3], dtype=tf.float32, initializer=tf.constant_initializer(50))
+        b = tf.get_variable("b", [2, 3], dtype=tf.float32,
+                            initializer=tf.contrib.layers.xavier_initializer(seed=0))
+
+        c = tf.placeholder(tf.float32, [2, 3])
+        sum_op1 = tf.add(a, b)
+        sum_op = tf.add(sum_op1, c)
+
+    init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
+
+    print("Before 'with tf.train.MonitoredTrainingSession'")
+
+    with tf.train.MonitoredTrainingSession(hooks=[MySessionRunHook()]) as s:
+        print("Before s.run(init_op)")
+        s.run(init_op)  # Actually assign initial value to variables
+        print("After s.run(init_op)")
+
+        print("Before sum = s.run #1 call")
+        sum = s.run(sum_op, feed_dict={c: [[100, 200, 300], [400, 500, 600]]})
+        print("After sum = s.run #1 call")
+        print(sum)
+
+        print("Before sum = s.run #2 call")
+        sum = s.run(sum_op, feed_dict={c: [[-10, -20, -30], [-40, -50, -60]]})
+        print("After sum = s.run #2 call")
+        print(sum)
+
+
+```
+
+## Output
 ```
 Before 'with tf.train.MonitoredTrainingSession'
 MySessionRunHook.begin() called
@@ -32,3 +91,13 @@ After sum = s.run #2 call
  [10.270153  -0.8629837 -9.593918 ]]
 MySessionRunHook.end() called
 ```
+
+Based on this, the sequence is the following:
+
+||Method|Note|
+|---|---|---|
+|1| SessionRunHook.begin() | |
+|2| SessionRunHook.after_create_session() | |
+|3| SessionRunHook.before_run() | Called once for each run()|
+|4| SessionRunHook.after_run() | Called once for each run()|
+|5| SessionRunHook.end() | |
