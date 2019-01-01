@@ -94,10 +94,10 @@ MySessionRunHook.end() called
 
 Based on this, the sequence is the following:
 
-|Num|Call|Note|
+||Call|Note|
 |---|---|---|
-|1.| MySessionRunHook.begin() | |
-|1.| MySessionRunHook.after_create_session() | |
-|1.| MySessionRunHook.before_run() | |
-|1.| MySessionRunHook.after_run() | |
-|1.| MySessionRunHook.end() | |
+|| SessionRunHook.begin() | |
+|| SessionRunHook.after_create_session() | |
+|| SessionRunHook.before_run() | Called once for each run()|
+|| SessionRunHook.after_run() | Called once for each run()|
+|| SessionRunHook.end() | |
