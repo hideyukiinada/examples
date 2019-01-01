@@ -5,7 +5,7 @@ I was looking at CIFAR10 example code and saw that they are subclassing tf.train
 custom class called  _LoggerHook class to log events related to sessions.
 There is a [Stack Overflow page](https://stackoverflow.com/questions/45532365/is-there-any-tutorial-for-tf-train-sessionrunhook) where you can get the general idea, but I wanted to have a crispier understanding regarding how it works, so I created an example doc and here is the output. 
 
-Code
+## Code
 ```
 
 class MySessionRunHook(tf.train.SessionRunHook):
@@ -61,7 +61,7 @@ def example():
 
 ```
 
-Output
+## Output
 ```
 Before 'with tf.train.MonitoredTrainingSession'
 MySessionRunHook.begin() called
