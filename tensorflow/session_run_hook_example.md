@@ -96,8 +96,8 @@ Based on this, the sequence is the following:
 
 ||Call|Note|
 |---|---|---|
-|| SessionRunHook.begin() | |
-|| SessionRunHook.after_create_session() | |
-|| SessionRunHook.before_run() | Called once for each run()|
-|| SessionRunHook.after_run() | Called once for each run()|
-|| SessionRunHook.end() | |
+|1| SessionRunHook.begin() | |
+|2| SessionRunHook.after_create_session() | |
+|3| SessionRunHook.before_run() | Called once for each run()|
+|4| SessionRunHook.after_run() | Called once for each run()|
+|5| SessionRunHook.end() | |
