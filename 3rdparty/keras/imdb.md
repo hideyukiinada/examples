@@ -1,4 +1,5 @@
 # Does word sequence matter in analyzing the sentiment in sentences?
+By Hide Inada
 
 Does word sequence matter in analyzing the sentiment in sentences?  
 
