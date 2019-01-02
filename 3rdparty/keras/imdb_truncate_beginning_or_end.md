@@ -2,7 +2,7 @@
 By Hide Inada
 <hr>
 I did another analysis if truncating at the beginning of the review or the end of a review if the review
-is longer than the size of the input for the network.
+is longer than the size of the input for the network.  The script used is [here](https://github.com/hideyukiinada/examples/blob/master/3rdparty/keras/imdb_truncate_beginning_or_end.py).
 
 ### Accuracy
 ####  Truncate at the beginning
