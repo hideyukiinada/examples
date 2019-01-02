@@ -16,8 +16,11 @@ Here is the result.
 ![With Average Pooling](/assets/images/imdb2.png)
 ![Without Average Pooling](/assets/images/imdb4.png)
 
+As you can see, accuracy goes up much faster for the option where the word sequence is kept without average pooling.
+However, accuracy with average pooling eventually goes up to high 80's as well.  So this seems to be a tie.
+
 ### Loss
 ![With Average Pooling](/assets/images/imdb1.png)
 ![Without Average Pooling](/assets/images/imdb3.png)
 
-As you can see, 
+As you can see, accuracy goes up much faster for the option where the word sequence is kept without average pooling.
