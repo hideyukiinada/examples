@@ -38,16 +38,15 @@ For the chart without average pooling, you can see the its overfitting the train
 
 # Hypothesis
 Based on this result, here is my hypothesis about what's going on.
-
+Also, let's make an assumption that, during training, the model learns that the word "fantastic" is related to positiveness.
+In a case like this, it doesn't really matter where the word "fantastic" is in a sentence as long as its gramatically correct.
 If I were to write a review by using the word "fantastic", it could be:
 
 * "I thought the movie was fantastic.".
 * "It was the one of the most fantastic movies of the year!"
 * "Fantastic cast and directing, well done!"
 
-In a case like this, it doesn't really matter where the word "fantastic" is in a sentence as long as its gramatically correct.
-
-Therefore, if you train the model with "was fantastic" then you may not catch "most fantastic" or "fantastic cast".
+However, if you do not ignore the word sequence, the way the word "fantastic" appears in the training data is learned during training. Let's say if you train the model with data which has a lot of samples with the word combination "was fantastic" then if you test data that has "most fantastic" or "fantastic cast", it may not consider the review as positive as it does not match the criteria for positiveness learned during training.Therefore, ignoring the word sequence may make the analysis potentially more robust to handle the diverse way of how the word "fantastic" may appear in a sentence.
 
 So what I would take is do both and analyze both results.
 
