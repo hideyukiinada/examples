@@ -12,9 +12,12 @@ Another approach is to keep the word embedding and feed into the neural network 
 So I tweaked the example code to also support the second case to see which option yields more accurate result.
 Here is the result.
 
+### Accuracy
 ![With Average Pooling](/assets/images/imdb1.png)
-![With Average Pooling](/assets/images/imdb2.png)
 ![Without Average Pooling](/assets/images/imdb3.png)
+
+### Loss
+![With Average Pooling](/assets/images/imdb2.png)
 ![Without Average Pooling](/assets/images/imdb4.png)
 
 As you can see, 
