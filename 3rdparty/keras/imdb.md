@@ -24,4 +24,22 @@ However, accuracy with average pooling eventually goes up to high 80's as well. 
 ![With Average Pooling](/assets/images/imdb1.png)
 ![Without Average Pooling](/assets/images/imdb3.png)
 
-For the chart without average pooling, you can see the its overfitting the training data as the validation loss splits around 5 epochs and the gap between the validation loss and the training data loss gets wider and wider. 
+For the chart without average pooling, you can see the its overfitting the training data as the validation loss splits around 5 epochs and the gap between the validation loss and the training data loss gets wider and wider. For this exercise, the increased loss did not seem to affect the accuracy, but it could in other cases.
+
+Here is my hypothesis.
+
+If I were to write a review by using the word "fantastic", it could be:
+
+* "I thought the movie was fantastic.".
+* "It was the one of the most fantastic movies of the year!"
+* "Fantastic cast and directing, well done!"
+
+In a case like this, it doesn't really matter where the word "fantastic" is in a sentence as long as its gramatically correct.
+
+Therefore, if you train the model with "was fantastic" then you may not catch "most fantastic" or "fantastic cast".
+
+So what I would take is do both and analyze both results.
+
+Of course, this is totally different from a language translation where the word sequence totally matters where John ate a fish mean different from a fish ate John ;-)
+
+
