@@ -3,7 +3,7 @@
 The original version of file is downloaded from the below URL:
 https://github.com/tensorflow/docs/blob/master/site/en/tutorials/keras/basic_text_classification.ipynb
 
-I made minor modifications.
+I made minor modifications to assess the impact of truncating options.
 """
 # Copyright 2018 The TensorFlow Authors.
 # @title Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,7 +71,7 @@ def load_data(truncating_option):
     Parameters
     ----------
     truncating_option: str
-        Controls whether to truncate at the beginning or the end
+        Controls whether to truncate at the beginning or the end.  Valid strings are 'pre' or 'post'.
 
     Returns
     -------
@@ -238,19 +238,21 @@ def main():
     """
     Load data, train and evaluate the IMDB data.
     """
-    (x_train, y_train), (x_val, y_val), (x_test, y_test) = load_data()
 
     history_list = list()
     plot_label_list = list()
 
-    for use_average_pooling in (True, False):
+    for truncating_option in ('pre', 'post'):
+        (x_train, y_train), (x_val, y_val), (x_test, y_test) = load_data(truncating_option)
+
+        use_average_pooling = True
         model, history = train(x_train, y_train, x_val, y_val, use_average_pooling)
 
         results = model.evaluate(x_test, y_test)
         log.info(results)
 
         history_list.append(history)
-        plot_label_list.append("Ave pooling: " + str(use_average_pooling))
+        plot_label_list.append("Truncating option: " + str(truncating_option))
 
     for i, h in enumerate(history_list):
         plot(h, plot_label_list[i])
