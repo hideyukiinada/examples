@@ -182,7 +182,7 @@ def train(x_train, y_train, x_val, y_val, use_global_average_pooling=False):
     return model, history
 
 
-def plot(history):
+def plot(history, label):
     """
     Plot stats using matplotlib
 
@@ -190,12 +190,12 @@ def plot(history):
     ----------
     history: History
         History of loss values and metrics.  For further details, see https://keras.io/models/sequential/
+    label: str
+        Label to show on top of the plot
     """
 
     history_dict = history.history
     history_dict.keys()
-
-    import matplotlib.pyplot as plt
 
     acc = history.history['acc']
     val_acc = history.history['val_acc']
@@ -205,10 +205,10 @@ def plot(history):
     epochs = range(1, len(acc) + 1)
 
     # "bo" is for "blue dot"
-    plt.plot(epochs, loss, 'bo', label='Training loss')
+    plt.plot(epochs, loss, 'bo', label='Training loss (%s)' % (label))
     # b is for "solid blue line"
-    plt.plot(epochs, val_loss, 'b', label='Validation loss')
-    plt.title('Training and validation loss')
+    plt.plot(epochs, val_loss, 'b', label='Validation loss (%s)' % (label))
+    plt.title('Training and validation loss (%s)' % (label))
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
@@ -219,9 +219,9 @@ def plot(history):
     acc_values = history_dict['acc']
     val_acc_values = history_dict['val_acc']
 
-    plt.plot(epochs, acc, 'bo', label='Training acc')
-    plt.plot(epochs, val_acc, 'b', label='Validation acc')
-    plt.title('Training and validation accuracy')
+    plt.plot(epochs, acc, 'bo', label='Training acc (%s)' % (label))
+    plt.plot(epochs, val_acc, 'b', label='Validation acc (%s)' % (label))
+    plt.title('Training and validation accuracy (%s)' % (label))
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
@@ -235,13 +235,20 @@ def main():
     """
     (x_train, y_train), (x_val, y_val), (x_test, y_test) = load_data()
 
+    history_list = list()
+    plot_label_list = list()
+
     for use_average_pooling in (True, False):
         model, history = train(x_train, y_train, x_val, y_val, use_average_pooling)
 
         results = model.evaluate(x_test, y_test)
         log.info(results)
 
-        plot(history)
+        history_list.append(history)
+        plot_label_list.append("Ave pooling: " + str(use_average_pooling))
+
+    for i, h in enumerate(history_list):
+        plot(h, plot_label_list[i])
 
 
 if __name__ == "__main__":
