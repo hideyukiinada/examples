@@ -36,7 +36,8 @@ However, accuracy with average pooling eventually goes up to high 80's as well. 
 
 For the chart without average pooling, you can see the its overfitting the training data as the validation loss splits around 5 epochs and the gap between the validation loss and the training data loss gets wider and wider. For this exercise, the increased loss did not seem to affect the accuracy, but it could in other cases.
 
-Here is my hypothesis.
+# Hypothesis
+Based on this result, here is my hypothesis about what's going on.
 
 If I were to write a review by using the word "fantastic", it could be:
 
