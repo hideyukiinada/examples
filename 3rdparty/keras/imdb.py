@@ -54,7 +54,7 @@ import matplotlib.pyplot as plt
 
 TRAINING_DATA_SET_SIZE = 10000
 NUM_WORDS_TO_LOAD = 10000
-NUM_WORDS_PER_SENTENCE = 256
+NUM_WORDS_PER_REVIEW = 256
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -105,12 +105,12 @@ def load_data():
     x_train = keras.preprocessing.sequence.pad_sequences(x_train_raw,
                                                          value=word_index["<PAD>"],
                                                          padding='post',
-                                                         maxlen=NUM_WORDS_PER_SENTENCE)
+                                                         maxlen=NUM_WORDS_PER_REVIEW)
 
     x_test = keras.preprocessing.sequence.pad_sequences(x_test_raw,
                                                         value=word_index["<PAD>"],
                                                         padding='post',
-                                                        maxlen=NUM_WORDS_PER_SENTENCE)
+                                                        maxlen=NUM_WORDS_PER_REVIEW)
 
     len(x_train[0]), len(x_train[1])
 
@@ -160,7 +160,7 @@ def train(x_train, y_train, x_val, y_val, use_global_average_pooling=False):
         model.add(keras.layers.Embedding(vocab_size, 16))
         model.add(keras.layers.GlobalAveragePooling1D())
     else:
-        model.add(Embedding(vocab_size, 16, input_length=NUM_WORDS_PER_SENTENCE))
+        model.add(Embedding(vocab_size, 16, input_length=NUM_WORDS_PER_REVIEW))
         model.add(Flatten())
 
     model.add(Dense(16, activation='relu'))
