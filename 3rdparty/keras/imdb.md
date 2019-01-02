@@ -3,7 +3,11 @@ By Hide Inada
 <hr>
 Does word sequence matter in analyzing the sentiment in sentences?  
 
-My answer was "Of course, it would."
+Sentiment analysis in AI is used for assessing if a person had a positive sentiment or negative sentiment about a thing that the person is providing reviews for.
+
+The question is do you think the sequence of words in a review matter during this assessment, or it does not.
+
+My answer before today was "Of course, it would."
 
 However, I was reading [Keras team's IMDB sentiment analysis tutorial](https://www.tensorflow.org/tutorials/keras/basic_text_classification) and played with its [companion code](https://github.com/tensorflow/docs/blob/master/site/en/tutorials/keras/basic_text_classification.ipynb) with and without keeping the sequence of words, I'm not sure if I was right.
 
