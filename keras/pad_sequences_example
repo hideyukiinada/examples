@@ -55,6 +55,16 @@ def example():
 
     print("a: %s. Padded: %s" % (str(a), str(padded))) # a: [[10 20 30 40 50]]. Padded: [[30 40 50]]
 
+    # Truncate the beginning part of an array as it has more than 3 elements
+    a = np.array([[10, 20, 30, 40, 50]])
+    padded = keras.preprocessing.sequence.pad_sequences(a,
+                                                        value=999,
+                                                        padding='post',
+                                                        truncating='pre',
+                                                        maxlen=3)
+
+    print("a: %s. Padded: %s" % (str(a), str(padded)))  # a: [[10 20 30 40 50]]. Padded: [[30 40 50]]
+
     # Truncate the end part of an array as it has more than 3 elements
     a = np.array([[10, 20, 30, 40, 50]])
     padded = keras.preprocessing.sequence.pad_sequences(a,
