@@ -17,15 +17,15 @@ Here is [the example code with my tweaks](https://github.com/hideyukiinada/examp
 Let's have a look at the result.
 
 ### Accuracy
-![With Average Pooling](/assets/images/imdb2.png)
-![Without Average Pooling](/assets/images/imdb4.png)
+![Word sequence not kept (With Average Pooling)](/assets/images/imdb2.png)
+![Word sequence kept (Without Average Pooling)](/assets/images/imdb4.png)
 
 As you can see, accuracy goes up much faster for the option where the word sequence is kept without average pooling.
 However, accuracy with average pooling eventually goes up to high 80's as well.  So this seems to be a tie.
 
 ### Loss
-![With Average Pooling](/assets/images/imdb1.png)
-![Without Average Pooling](/assets/images/imdb3.png)
+![Word sequence not kept (With Average Pooling)](/assets/images/imdb1.png)
+![Word sequence kept (Without Average Pooling)](/assets/images/imdb3.png)
 
 For the chart without average pooling, you can see the its overfitting the training data as the validation loss splits around 5 epochs and the gap between the validation loss and the training data loss gets wider and wider. For this exercise, the increased loss did not seem to affect the accuracy, but it could in other cases.
 
