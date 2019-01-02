@@ -15,7 +15,7 @@ So I tweaked the example code to also support the second case to see which optio
 Here is [the example code with my tweaks](https://github.com/hideyukiinada/examples/blob/master/3rdparty/keras/imdb.py).
 
 Let's have a look at the result. 
-Please note that "Average Pooling:True" means that the word sequence was *not* kept.  "Average Pooling: False" means that the word sequence was kept.
+Please note that "Average Pooling:True" means that the word sequence was *not* kept.  "Average Pooling: False" means that the word sequence was kept.  What average pooling does is to take the embedding (vector) assigned to each word and take an average for the entire sentence.  I also wrote an example code for this.
 
 ### Accuracy
 ####  Word sequence was *not* kept
