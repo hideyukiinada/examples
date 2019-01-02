@@ -1,6 +1,9 @@
 # Does word sequence matter in analyzing the sentiment in sentences?
 
-Does word sequence matter in analyzing the sentiment in sentences?  My answer was "Of course, it would."
+Does word sequence matter in analyzing the sentiment in sentences?  
+
+My answer was "Of course, it would."
+
 However, I was reading [Keras team's IMDB sentiment analysis tutorial](https://www.tensorflow.org/tutorials/keras/basic_text_classification) and played with its [companion code](https://github.com/tensorflow/docs/blob/master/site/en/tutorials/keras/basic_text_classification.ipynb) with and without keeping the sequence of words, I'm not sure if I was right.
 
 The example code squishes the word embedding of all the words and calculate the average for the entire sentence.
