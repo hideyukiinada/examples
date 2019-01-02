@@ -12,9 +12,9 @@ The example code squishes the word embedding of words in a sentence and calculat
 Another approach is to keep the word embedding and feed into the neural network.
 
 So I tweaked the example code to also support the second case to see which option yields more accurate result.
-My code is here.
+Here is [the example code with my tweaks](https://github.com/hideyukiinada/examples/blob/master/3rdparty/keras/imdb.py).
 
-Here is the result.
+Let's have a look at the result.
 
 ### Accuracy
 ![With Average Pooling](/assets/images/imdb2.png)
