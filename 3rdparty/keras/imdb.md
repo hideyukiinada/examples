@@ -1,8 +1,6 @@
 # Does word sequence matter in analyzing the sentiment in sentences?
 By Hide Inada
 <hr>
-Does word sequence matter in analyzing the sentiment in sentences?  
-
 Sentiment analysis in AI is used for assessing if a person had a positive sentiment or negative sentiment about a thing that the person is providing reviews for.
 
 The question is do you think the sequence of words in a review matter during this assessment, or it does not.
