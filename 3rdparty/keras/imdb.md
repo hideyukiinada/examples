@@ -1,1 +1,55 @@
-readme
+# Does word sequence matter in analyzing the sentiment in sentences?
+By Hide Inada
+<hr>
+Sentiment analysis in AI is used for assessing if a person had a positive sentiment or negative sentiment about a thing that the person is providing a review for.
+Do you think the sequence of words in a review matter during this assessment, or it does not?
+
+My answer before today was "Of course, it would."
+
+However, I was reading [Keras team's IMDB sentiment analysis tutorial](https://www.tensorflow.org/tutorials/keras/basic_text_classification) and played with its [companion code](https://github.com/tensorflow/docs/blob/master/site/en/tutorials/keras/basic_text_classification.ipynb) with and without keeping the sequence of words, I'm not sure if I was right.
+
+The example code squishes the word embedding of words in a sentence and calculates the average for the entire sentence before feeding the data to a dense layer.
+Another approach is to keep the word embedding and feed into the neural network.
+
+So I tweaked the example code to also support the second case to see which option yields more accurate result.
+Here is [the example code with my tweaks](https://github.com/hideyukiinada/examples/blob/master/3rdparty/keras/imdb.py).
+
+Let's have a look at the result. 
+Please note that "Average Pooling:True" means that the word sequence was *not* kept.  "Average Pooling: False" means that the word sequence was kept.
+
+### Accuracy
+####  Word sequence was *not* kept
+![Word sequence not kept (With Average Pooling)](/assets/images/imdb2.png)
+
+####  Word sequence was kept
+![Word sequence kept (Without Average Pooling)](/assets/images/imdb4.png)
+
+As you can see, accuracy goes up much faster for the option where the word sequence is kept without average pooling.
+However, accuracy with average pooling eventually goes up to high 80's as well.  So this seems to be a tie.
+
+### Loss
+####  Word sequence was *not* kept
+![Word sequence not kept (With Average Pooling)](/assets/images/imdb1.png)
+
+####  Word sequence was kept
+![Word sequence kept (Without Average Pooling)](/assets/images/imdb3.png)
+
+For the chart without average pooling, you can see the its overfitting the training data as the validation loss splits around 5 epochs and the gap between the validation loss and the training data loss gets wider and wider. For this exercise, the increased loss did not seem to affect the accuracy, but it could in other cases.
+
+# Hypothesis
+Based on this result, here is my hypothesis about what's going on.
+Also, let's make an assumption that, during training, the model learns that the word "fantastic" is related to positiveness.
+In a case like this, it doesn't really matter where the word "fantastic" is in a sentence as long as its gramatically correct.
+If I were to write a review by using the word "fantastic", it could be:
+
+* "I thought the movie was fantastic.".
+* "It was the one of the most fantastic movies of the year!"
+* "Fantastic cast and directing, well done!"
+
+However, if you do not ignore the word sequence, the way the word "fantastic" appears in the training data is learned during training. Let's say if you train the model with data which has a lot of samples with the word combination "was fantastic" then if you test data that has "most fantastic" or "fantastic cast", it may not consider the review as positive as it does not match the criteria for positiveness learned during training.Therefore, ignoring the word sequence may make the analysis potentially more robust to handle the diverse way of how the word "fantastic" may appear in a sentence.
+
+So what I would take is do both and analyze both results.
+
+Of course, this is totally different from a language translation where the word sequence totally matters where John ate a fish mean different from a fish ate John ;-)
+
+
