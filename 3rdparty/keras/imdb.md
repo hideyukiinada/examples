@@ -2,8 +2,7 @@
 By Hide Inada
 <hr>
 Sentiment analysis in AI is used for assessing if a person had a positive sentiment or negative sentiment about a thing that the person is providing a review for.
-<br>
-The question is do you think the sequence of words in a review matter during this assessment, or it does not.
+Do you think the sequence of words in a review matter during this assessment, or it does not?
 
 My answer before today was "Of course, it would."
 
