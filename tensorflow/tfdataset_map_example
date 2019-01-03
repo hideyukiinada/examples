@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+"""
+An example script to demo tf.data.Dataset.map()
+
+References
+----------
+https://github.com/tensorflow/docs/blob/master/site/en/tutorials/sequences/text_generation.ipynb
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+import tensorflow as tf
+import numpy as np
+
+import keras
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+tf.enable_eager_execution() # See. https://www.tensorflow.org/api_docs/python/tf/enable_eager_execution
+
+
+def split_dataset_into_training_and_validation(dataset):
+    dataset_size = int(dataset.shape[0])  # TensorShape
+    print("Batch dataset size: %d" % (dataset_size))
+
+    training_dataset_size = int(dataset_size * 0.8)
+
+    training_dataset = dataset[:training_dataset_size]
+    validation_dataset = dataset[training_dataset_size:]
+
+    return training_dataset, validation_dataset
+
+
+def example():
+    """An example code.
+    """
+    fruits = ['apple', 'banana', 'coconut', 'durian', 'egg fruit']
+
+    d = tf.data.Dataset.from_tensor_slices(fruits)  # Create TensorSliceDataset
+
+    # Create BatchDataset, if you create multiple batches, you need to set drop_remainder to False for the mapping function to know the size.
+    # Try it by setting the batch size to 2 and drop_remainder = False
+    fruit_batches = d.batch(5, drop_remainder=True)
+
+    training_and_validation_dataset = fruit_batches.map(split_dataset_into_training_and_validation)
+
+    for training_sample, validation_sample in training_and_validation_dataset:
+        element = training_sample.numpy()
+        print("Training sample: %s " % (str(element)))
+
+        element = validation_sample.numpy()
+        print("Validation sample: %s" % (str(element)))
+
+        # This outputs:
+        # Training sample: [b'apple' b'banana' b'coconut' b'durian']
+        # Validation sample: [b'egg fruit']
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
