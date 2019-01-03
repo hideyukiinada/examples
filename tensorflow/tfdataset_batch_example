@@ -28,7 +28,7 @@ def example():
     a = ['apple', 'banana', 'coconut', 'donut', 'egg']
     d = tf.data.Dataset.from_tensor_slices(a)
 
-    # Split the 5-element batch into 2 batches.  Each batch size is 2.  Drop the last element.
+    # Split the 5-element dataset into 2 batches.  Each batch size is 2.  Drop the last element.
     batches = d.batch(2, drop_remainder=True)  # batch size=2
 
     for batch in batches:
@@ -38,7 +38,7 @@ def example():
         # [b'apple' b'banana']
         # [b'coconut' b'donut']
 
-    # Split the 5-element batch into 3 batches.  Each batch size is 2 except the last batch.  Keep the last element.
+    # Split the 5-element dataset into 3 batches.  Each batch size is 2 except the last batch.  Keep the last element.
     batches = d.batch(2, drop_remainder=False)  # batch size=2
 
     for batch in batches:
