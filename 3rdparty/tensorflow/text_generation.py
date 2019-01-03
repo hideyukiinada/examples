@@ -36,6 +36,9 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 
 def create_dataset():
+    """
+    Load Shakespeare data.
+    """
     path_to_file = tf.keras.utils.get_file(FILE_PATH,
                                            'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt')
 
@@ -76,12 +79,23 @@ def create_dataset():
 
     return char_dataset, char2idx, idx2char, vocab, seq_length, examples_per_epoch
 
+def build_sequence():
+    char_dataset, char2idx, idx2char, vocab, seq_length, examples_per_epoch = create_dataset()
+
+    for i in char_dataset.take(5):
+        print(idx2char[i.numpy()])
+
+    sequences = char_dataset.batch(seq_length + 1, drop_remainder=True)
+
+    for item in sequences.take(5):
+        print(repr(''.join(idx2char[item.numpy()])))
+
+    return sequences, idx2char, vocab, examples_per_epoch
+
+
 
 def main():
-    """
-    Load IMDB data.
-    """
-    char_dataset, idx2char, seq_length, vocab, examples_per_epoch = create_dataset()
+    sequences, idx2char, vocab, examples_per_epoch = build_sequence()
 
 
 if __name__ == "__main__":

@@ -32,13 +32,20 @@ def example():
     a = ['apple', 'banana', 'coconut']
     d = tf.data.Dataset.from_tensor_slices(a)
     iter = d.make_one_shot_iterator()
+
     next_a = iter.get_next()
+
+    # Create a sub-array
+    d_sub = d.take(2) # Equivalent of d[0:2]
+    iter_sub = d_sub.make_one_shot_iterator()
+    next_a_sub = iter_sub.get_next()
 
     init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
 
     with tf.Session() as s:
         s.run(init_op)  # Actually assign initial value to variables
 
+        print("a\n-----")
         while True:
             try:
                 next_a_val = next_a.eval()
@@ -53,6 +60,23 @@ def example():
             except:
                 print("Other error")
                 break
+
+        print("")
+        print("a_sub\n-----")
+        while True:
+            try:
+                next_a_sub_val = next_a_sub.eval()
+                print(next_a_sub_val)
+                # This outputs:
+                # b'apple'
+                # b'banana'
+            except tf.errors.OutOfRangeError:
+                print("All data in a_sub have been returned by the iterator")
+                break
+            except:
+                print("Other error")
+                break
+
 def main():
     """Defines an application's main functionality"""
     example()
