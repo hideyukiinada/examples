@@ -75,17 +75,18 @@ def create_tf_dataset():
     examples_per_epoch = len(text) // seq_length  # Length of text: 1115394 characters. // 100 = 11153
 
     # Create training examples / targets
-    char_tf_dataset = tf.data.Dataset.from_tensor_slices(text_as_int) # Feed # [18 47 56 57 58  1 15 47 58 47 ...]
+    char_tf_dataset_int_seq = tf.data.Dataset.from_tensor_slices(text_as_int) # Feed # [18 47 56 57 58  1 15 47 58 47 ...]
 
-    return char_tf_dataset, char2idx, idx2char, vocab, seq_length, examples_per_epoch
+    return char_tf_dataset_int_seq, char2idx, idx2char, vocab, seq_length, examples_per_epoch
 
 def build_sequence():
-    char_dataset, char2idx, idx2char, vocab, seq_length, examples_per_epoch = create_tf_dataset()
+    char_tf_dataset_int_seq, char2idx, idx2char, vocab, seq_length, examples_per_epoch = create_tf_dataset()
 
-    for i in char_dataset.take(5): # Equivalent of char_dataset[:5]
-        print(idx2char[i.numpy()])
+    # Output 5 characters
+    for i in char_tf_dataset_int_seq.take(5): # Equivalent of char_dataset[:5]
+        print(idx2char[i.numpy()])  # convert to numpy format, then to a char.
 
-    sequences = char_dataset.batch(seq_length + 1, drop_remainder=True)
+    sequences = char_tf_dataset_int_seq.batch(seq_length + 1, drop_remainder=True)
 
     for item in sequences.take(5):
         print(repr(''.join(idx2char[item.numpy()])))
