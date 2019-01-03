@@ -3,7 +3,7 @@
 The original version of file is downloaded from the below URL:
 https://github.com/tensorflow/docs/blob/master/site/en/tutorials/sequences/text_generation.ipynb
 
-I made minor modifications to print reviews only.
+I made extensive modifications to structure the code the way I want as well as annotating.
 """
 # Copyright 2018 The TensorFlow Authors.
 # @title Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,7 @@ import tensorflow as tf
 tf.enable_eager_execution()
 
 FILE_PATH = '/tmp/shakespeare.txt'
+BATCH_SIZE = 64
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -55,11 +56,11 @@ def create_tf_dataset():
     print('{} unique characters'.format(len(vocab)))
 
     # Creating a mapping from unique characters to indices
-    char2idx = {u: i for i, u in enumerate(vocab)} # e.g. char2idx['A'] = 13
-    idx2char = np.array(vocab) # idx2char[13] = 'A'
+    char2idx = {u: i for i, u in enumerate(vocab)}  # e.g. char2idx['A'] = 13
+    idx2char = np.array(vocab)  # idx2char[13] = 'A'
 
     # Convert the text to an array of integers
-    text_as_int = np.array([char2idx[c] for c in text]) # [18 47 56 57 58  1 15 47 58 47 ...]
+    text_as_int = np.array([char2idx[c] for c in text])  # [18 47 56 57 58  1 15 47 58 47 ...]
 
     # Show the first 20 characters and IDs
     print('{')
@@ -75,15 +76,17 @@ def create_tf_dataset():
     examples_per_epoch = len(text) // seq_length  # Length of text: 1115394 characters. // 100 = 11153
 
     # Create training examples / targets
-    char_tf_dataset_int_seq = tf.data.Dataset.from_tensor_slices(text_as_int) # Feed # [18 47 56 57 58  1 15 47 58 47 ...]
+    char_tf_dataset_int_seq = tf.data.Dataset.from_tensor_slices(
+        text_as_int)  # Feed # [18 47 56 57 58  1 15 47 58 47 ...]
 
     return char_tf_dataset_int_seq, char2idx, idx2char, vocab, seq_length, examples_per_epoch
+
 
 def build_sequence():
     char_tf_dataset_int_seq, char2idx, idx2char, vocab, seq_length, examples_per_epoch = create_tf_dataset()
 
     # Output 5 characters
-    for i in char_tf_dataset_int_seq.take(5): # Equivalent of char_dataset[:5]
+    for i in char_tf_dataset_int_seq.take(5):  # Equivalent of char_dataset[:5]
         print(idx2char[i.numpy()])  # convert to numpy format, then to a char.
 
     # Break the 1 million int sequence to batches with size 101. Drop the last portion that does not fill the batch size.
@@ -96,8 +99,8 @@ def build_sequence():
 
 
 def split_input_target(chunk):
-    input_text = chunk[:-1] # everything but the last letter
-    target_text = chunk[1:] # everything but the first letter
+    input_text = chunk[:-1]  # everything but the last letter
+    target_text = chunk[1:]  # everything but the first letter
     return input_text, target_text
 
 
@@ -115,17 +118,21 @@ def setup_rnn():
     # when 'p' is input from 1), try to guess 'p' from 2)
     dataset = sequences.map(split_input_target)
 
+    # Print out:
+    #   First input data
+    #   First target data
     for input_example, target_example in dataset.take(1):
         print('Input data: ', repr(''.join(idx2char[input_example.numpy()])))
         print('Target data:', repr(''.join(idx2char[target_example.numpy()])))
 
+        # Print out:
+        #  First 5 letters of input data
+        #  First 5 letters of target data
         for i, (input_idx, target_idx) in enumerate(zip(input_example[:5], target_example[:5])):
             print("Step {:4d}".format(i))
             print("  input: {} ({:s})".format(input_idx, repr(idx2char[input_idx])))
             print("  expected output: {} ({:s})".format(target_idx, repr(idx2char[target_idx])))
 
-    # Batch size
-    BATCH_SIZE = 64
     steps_per_epoch = examples_per_epoch // BATCH_SIZE
 
     # Buffer size to shuffle the dataset
@@ -150,13 +157,134 @@ def setup_rnn():
     else:
         import functools
 
+        # Define rnn as GRU(ecurrent_activation='sigmoid')
         rnn = functools.partial(
             tf.keras.layers.GRU, recurrent_activation='sigmoid')
 
-    return rnn_units, rnn, embedding_dim
+    return dataset, rnn_units, rnn, embedding_dim, char2idx, idx2char, vocab, vocab_size, steps_per_epoch
+
+
+def build_model(rnn, vocab_size, embedding_dim, rnn_units, batch_size, ):
+    model = tf.keras.Sequential([
+        tf.keras.layers.Embedding(vocab_size, embedding_dim,
+                                  batch_input_shape=[batch_size, None]),
+        rnn(rnn_units,
+            return_sequences=True,
+            recurrent_initializer='glorot_uniform',
+            stateful=True),
+        tf.keras.layers.Dense(vocab_size)
+    ])
+    return model
+
+
+def loss(labels, logits):
+    #    return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
+    return tf.keras.losses.sparse_categorical_crossentropy(labels, logits)
+
+
+def generate_text(model, char2idx, idx2char, start_string):
+    # Evaluation step (generating text using the learned model)
+
+    # Number of characters to generate
+    num_generate = 1000
+
+    # You can change the start string to experiment
+    start_string = 'ROMEO'
+
+    # Converting our start string to numbers (vectorizing)
+    input_eval = [char2idx[s] for s in start_string]
+    input_eval = tf.expand_dims(input_eval, 0)
+
+    # Empty string to store our results
+    text_generated = []
+
+    # Low temperatures results in more predictable text.
+    # Higher temperatures results in more surprising text.
+    # Experiment to find the best setting.
+    temperature = 1.0
+
+    # Here batch size == 1
+    model.reset_states()
+    for i in range(num_generate):
+        predictions = model(input_eval)
+        # remove the batch dimension
+        predictions = tf.squeeze(predictions, 0)
+
+        # using a multinomial distribution to predict the word returned by the model
+        predictions = predictions / temperature
+        predicted_id = tf.multinomial(predictions, num_samples=1)[-1, 0].numpy()
+
+        # We pass the predicted word as the next input to the model
+        # along with the previous hidden state
+        input_eval = tf.expand_dims([predicted_id], 0)
+
+        text_generated.append(idx2char[predicted_id])
+
+    return (start_string + ''.join(text_generated))
+
 
 def main():
-    setup_rnn()
+    dataset, rnn_units, rnn, embedding_dim, char2idx, idx2char, vocab, vocab_size, steps_per_epoch = setup_rnn()
+
+    model = build_model(rnn,
+                        vocab_size=len(vocab),
+                        embedding_dim=embedding_dim,
+                        rnn_units=rnn_units,
+                        batch_size=BATCH_SIZE)
+
+    example_batch_predictions = None  # HI
+    input_example_batch = None  # HI
+    target_example_batch = None  # HI
+
+    for input_example_batch, target_example_batch in dataset.take(1):
+        example_batch_predictions = model(input_example_batch)
+        print(example_batch_predictions.shape, "# (batch_size, sequence_length, vocab_size)")
+
+    model.summary()
+
+    # sampled_indices = tf.random.categorical(example_batch_predictions[0], num_samples=1)
+    sampled_indices = tf.random.multinomial(example_batch_predictions[0], num_samples=1)
+
+    sampled_indices = tf.squeeze(sampled_indices, axis=-1).numpy()
+
+    print("Input: \n", repr("".join(idx2char[input_example_batch[0]])))
+    print()
+    print("Next Char Predictions: \n", repr("".join(idx2char[sampled_indices])))
+
+    example_batch_loss = loss(target_example_batch, example_batch_predictions)
+    print("Prediction shape: ", example_batch_predictions.shape, " # (batch_size, sequence_length, vocab_size)")
+    print("scalar_loss:      ", example_batch_loss.numpy().mean())
+
+    model.compile(
+        optimizer=tf.train.AdamOptimizer(),
+        loss=loss)
+
+    # Directory where the checkpoints will be saved
+    checkpoint_dir = './training_checkpoints'
+    # Name of the checkpoint files
+    checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt_{epoch}")
+
+    checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+        filepath=checkpoint_prefix,
+        save_weights_only=True)
+
+    EPOCHS = 3
+
+    history = model.fit(dataset.repeat(), epochs=EPOCHS, steps_per_epoch=steps_per_epoch,
+                        callbacks=[checkpoint_callback])
+    print("Training completed.")
+
+    # Predict
+    tf.train.latest_checkpoint(checkpoint_dir)
+    model = build_model(vocab_size, embedding_dim, rnn_units, batch_size=1)
+
+    model.load_weights(tf.train.latest_checkpoint(checkpoint_dir))
+
+    model.build(tf.TensorShape([1, None]))
+
+    model.summary()
+
+    print(generate_text(model, char2idx, idx2char, start_string="ROMEO: "))
 
 
 if __name__ == "__main__":
