@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 
-def create_dataset():
+def create_tf_dataset():
     """
     Load Shakespeare data.
     """
@@ -75,14 +75,14 @@ def create_dataset():
     examples_per_epoch = len(text) // seq_length  # Length of text: 1115394 characters. // 100 = 11153
 
     # Create training examples / targets
-    char_dataset = tf.data.Dataset.from_tensor_slices(text_as_int) # Feed # [18 47 56 57 58  1 15 47 58 47 ...]
+    char_tf_dataset = tf.data.Dataset.from_tensor_slices(text_as_int) # Feed # [18 47 56 57 58  1 15 47 58 47 ...]
 
-    return char_dataset, char2idx, idx2char, vocab, seq_length, examples_per_epoch
+    return char_tf_dataset, char2idx, idx2char, vocab, seq_length, examples_per_epoch
 
 def build_sequence():
-    char_dataset, char2idx, idx2char, vocab, seq_length, examples_per_epoch = create_dataset()
+    char_dataset, char2idx, idx2char, vocab, seq_length, examples_per_epoch = create_tf_dataset()
 
-    for i in char_dataset.take(5):
+    for i in char_dataset.take(5): # Equivalent of char_dataset[:5]
         print(idx2char[i.numpy()])
 
     sequences = char_dataset.batch(seq_length + 1, drop_remainder=True)
