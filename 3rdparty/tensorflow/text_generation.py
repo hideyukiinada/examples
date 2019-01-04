@@ -19,7 +19,6 @@ I made extensive modifications to structure the code the way I want as well as a
 # limitations under the License.
 
 import os
-import time
 
 import logging
 
@@ -136,7 +135,7 @@ def load_data():
             print("  input: {} ({:s})".format(input_idx, repr(idx2char[input_idx])))
             print("  expected output: {} ({:s})".format(target_idx, repr(idx2char[target_idx])))
 
-    steps_per_epoch = examples_per_epoch // BATCH_SIZE # e.g. steps per epoch = 174
+    steps_per_epoch = examples_per_epoch // BATCH_SIZE  # e.g. steps per epoch = 174
 
     # Buffer size to shuffle the dataset
     # (TF data is designed to work with possibly infinite sequences,
@@ -146,8 +145,6 @@ def load_data():
 
     # Length of the vocabulary in chars
     vocab_size = len(vocab)
-
-
 
     return dataset, char2idx, idx2char, vocab, vocab_size, steps_per_epoch
 
@@ -229,7 +226,7 @@ def main():
     rnn_layer = setup_rnn_layer()
 
     model = build_model(rnn_layer,
-                        vocab_size=len(vocab),
+                        vocab_size=vocab_size,
                         batch_size=BATCH_SIZE)
 
     example_batch_predictions = None  # HI
