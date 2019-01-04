@@ -24,7 +24,7 @@ I made extensive modifications to:
 import os
 
 import logging
-
+from pathlib import Path
 import numpy as np
 
 import tensorflow as tf
@@ -249,12 +249,17 @@ def show_untrained_prediction(dataset, model, idx2word):
 
 
 def setup_checkpoint_callback():
-    checkpoint_dir = CHECKPOINT_DIR  # Directory where the checkpoints will be saved
-    checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt_{epoch}")  # Name of the checkpoint files
+
+    checkpoint_dir = Path(CHECKPOINT_DIR)  # Directory where the checkpoints will be saved
+
+    if checkpoint_dir.exists() is False:
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
+
+    checkpoint_prefix = checkpoint_dir / Path("ckpt_{epoch}")  # Name of the checkpoint files
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath=checkpoint_prefix,
+        filepath=str(checkpoint_prefix),
         save_weights_only=True)
-    return checkpoint_callback, checkpoint_dir
+    return checkpoint_callback, str(checkpoint_dir)
 
 
 def main():
