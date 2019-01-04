@@ -104,7 +104,7 @@ def split_input_target(chunk):
     return input_text, target_text
 
 
-def setup_rnn():
+def load_data():
     # Build batches of int arrays of size 101 representing letters
     sequences, char2idx, idx2char, vocab, examples_per_epoch = build_sequence()
 
@@ -149,9 +149,9 @@ def setup_rnn():
     # The embedding dimension
     embedding_dim = 256
 
-    # Number of RNN units
-    rnn_units = 1024
+    return dataset, embedding_dim, char2idx, idx2char, vocab, vocab_size, steps_per_epoch
 
+def setup_rnn_layer():
     if tf.test.is_gpu_available():
         rnn = tf.keras.layers.CuDNNGRU
     else:
@@ -161,14 +161,18 @@ def setup_rnn():
         rnn = functools.partial(
             tf.keras.layers.GRU, recurrent_activation='sigmoid')
 
-    return dataset, rnn_units, rnn, embedding_dim, char2idx, idx2char, vocab, vocab_size, steps_per_epoch
+    return rnn
 
 
-def build_model(rnn, vocab_size, embedding_dim, rnn_units, batch_size, ):
+def build_model(rnn_layer, vocab_size, embedding_dim, batch_size, ):
+
+    # Number of RNN units
+    rnn_units = 1024
+
     model = tf.keras.Sequential([
         tf.keras.layers.Embedding(vocab_size, embedding_dim,
                                   batch_input_shape=[batch_size, None]),
-        rnn(rnn_units,
+        rnn_layer(rnn_units,
             return_sequences=True,
             recurrent_initializer='glorot_uniform',
             stateful=True),
@@ -224,12 +228,12 @@ def generate_text(model, char2idx, idx2char, start_string):
 
 
 def main():
-    dataset, rnn_units, rnn, embedding_dim, char2idx, idx2char, vocab, vocab_size, steps_per_epoch = setup_rnn()
+    dataset, embedding_dim, char2idx, idx2char, vocab, vocab_size, steps_per_epoch = load_data()
+    rnn_layer = setup_rnn_layer()
 
-    model = build_model(rnn,
+    model = build_model(rnn_layer,
                         vocab_size=len(vocab),
                         embedding_dim=embedding_dim,
-                        rnn_units=rnn_units,
                         batch_size=BATCH_SIZE)
 
     example_batch_predictions = None  # HI
@@ -276,7 +280,7 @@ def main():
 
     # Predict
     tf.train.latest_checkpoint(checkpoint_dir)
-    model = build_model(rnn, vocab_size, embedding_dim, rnn_units, batch_size=1)
+    model = build_model(rnn_layer, vocab_size, embedding_dim, batch_size=1)
 
     model.load_weights(tf.train.latest_checkpoint(checkpoint_dir))
 
