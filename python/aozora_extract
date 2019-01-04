@@ -27,6 +27,7 @@ __copyright__ = "Copyright 2018, Hide Inada"
 __license__ = "The MIT License"
 __email__ = "hideyuki@gmail.com"
 """
+import os
 import sys
 import logging
 
@@ -54,40 +55,41 @@ def main():
         sys.exit(1)
 
     output_dir_path = Path(OUTPUT_DIR)
-    if output_dir_path.exists is False:
-        output_dir_path.mkdirmkdir(parents=True, exist_ok=True)
+    if output_dir_path.exists() is False:
+        output_dir_path.mkdir(parents=True, exist_ok=True)
         log.info("Created: %s" % (output_dir_path))
 
     # Process files
     for input_file in input_dir_path.glob("*.txt"):
-        output_file_name = output_dir_path / input_file.name
+        output_file_path = output_dir_path / input_file.name
+        log.info("Writing: %s" % (output_file_path))
 
         header = True
         note_section = False
 
         # Process a single file
         with codecs.open(input_file, "r", encoding="shiftjis") as f_input:
-            with open(output_file_name, "w") as f_out:
+            with open(output_file_path, "w") as f_out:
 
-                for line in f_input.read_line():
+                for line in f_input:
 
                     r1 = regex.compile(u"［.*］")
                     r2 = regex.compile(u"《.*》")
                     if header is True:
-                        if l.find("-----") >= 0:
+                        if line.find("-----") >= 0:
                             if note_section is False:
                                 note_section = True
                             else:
                                 header = False
                         continue
 
-                    if l.find(u"底本：") >= 0:
+                    if line.find(u"底本：") >= 0:
                         break
 
-                    l = r1.sub("", l)
-                    l = r2.sub("", l)
+                    line = r1.sub("", line)
+                    line = r2.sub("", line)
 
-                    f_out.write(l)
+                    f_out.write(line)
 
 
 if __name__ == "__main__":
