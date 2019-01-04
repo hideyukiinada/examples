@@ -61,7 +61,7 @@ def create_tf_dataset():
     updated_text = original_text.replace(". ", EOS_MARKER)
     updated_text = updated_text.replace("\n", CR_MARKER)
 
-    filters = '\'!"#$%&()*+,-/:;=?@[\]^_`{|}~'
+    filters = '\'!"#$%&()*+,-/;=?@[\]^_`{|}~'
     words_in_text = keras.preprocessing.text.text_to_word_sequence(updated_text,
                                                                    filters=filters,lower=False, split=' ')
 
