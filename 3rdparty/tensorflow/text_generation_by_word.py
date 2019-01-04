@@ -40,8 +40,10 @@ DEFAULT_START_STRING = "Romeo" # if START_STRING is not found in text, this stri
 URL = 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt'
 FILE_PATH = '/tmp/shakespeare.txt'
 CHECKPOINT_DIR = '/tmp/ml_examples/training_checkpoints_text_generation_by_word'
-EOS_MARKER = " <EOS> "  # Space at the beginning so that EOS will be tokenized separately.
-CR_MARKER = " <CR> " # Space at the beginning so that CR will be tokenized separately.
+EOS_MARKER_PADDED = " <EOS> "  # Space at the beginning and the end so that EOS will be tokenized separately.
+CR_MARKER_PADDED = " <CR> "
+EOS_MARKER = "<EOS>"
+CR_MARKER = "<CR>"
 
 tf.enable_eager_execution()
 
@@ -58,8 +60,8 @@ def create_tf_dataset():
     original_text = open(path_to_file).read()
 
     # Process end of sentence
-    updated_text = original_text.replace(". ", EOS_MARKER)
-    updated_text = updated_text.replace("\n", CR_MARKER)
+    updated_text = original_text.replace(". ", EOS_MARKER_PADDED)
+    updated_text = updated_text.replace("\n", CR_MARKER_PADDED)
 
     filters = '\'!"#$%&()*+,-/;=?@[\]^_`{|}~'
     words_in_text = keras.preprocessing.text.text_to_word_sequence(updated_text,
