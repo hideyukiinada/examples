@@ -31,6 +31,9 @@ tf.enable_eager_execution()
 
 FILE_PATH = '/tmp/shakespeare.txt'
 BATCH_SIZE = 64
+BUFFER_SIZE = 10000
+EMBEDDING_DIM = 256
+RNN_UNITS = 1024
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -59,7 +62,7 @@ def create_tf_dataset():
     char2idx = {u: i for i, u in enumerate(vocab)}  # e.g. char2idx['A'] = 13
     idx2char = np.array(vocab)  # idx2char[13] = 'A'
 
-    # Convert the text to an array of integers
+    # Tokenize: Convert the text to an array of integers
     text_as_int = np.array([char2idx[c] for c in text])  # [18 47 56 57 58  1 15 47 58 47 ...]
 
     # Show the first 20 characters and IDs
@@ -75,7 +78,7 @@ def create_tf_dataset():
     seq_length = 100
     examples_per_epoch = len(text) // seq_length  # Length of text: 1115394 characters. // 100 = 11153
 
-    # Create training examples / targets
+    # Create TensorFlow dataset
     char_tf_dataset_int_seq = tf.data.Dataset.from_tensor_slices(
         text_as_int)  # Feed # [18 47 56 57 58  1 15 47 58 47 ...]
 
@@ -133,23 +136,20 @@ def load_data():
             print("  input: {} ({:s})".format(input_idx, repr(idx2char[input_idx])))
             print("  expected output: {} ({:s})".format(target_idx, repr(idx2char[target_idx])))
 
-    steps_per_epoch = examples_per_epoch // BATCH_SIZE
+    steps_per_epoch = examples_per_epoch // BATCH_SIZE # e.g. steps per epoch = 174
 
     # Buffer size to shuffle the dataset
     # (TF data is designed to work with possibly infinite sequences,
     # so it doesn't attempt to shuffle the entire sequence in memory. Instead,
     # it maintains a buffer in which it shuffles elements).
-    BUFFER_SIZE = 10000
-
     dataset = dataset.shuffle(BUFFER_SIZE).batch(BATCH_SIZE, drop_remainder=True)
 
     # Length of the vocabulary in chars
     vocab_size = len(vocab)
 
-    # The embedding dimension
-    embedding_dim = 256
 
-    return dataset, embedding_dim, char2idx, idx2char, vocab, vocab_size, steps_per_epoch
+
+    return dataset, char2idx, idx2char, vocab, vocab_size, steps_per_epoch
 
 
 def setup_rnn_layer():
@@ -165,14 +165,11 @@ def setup_rnn_layer():
     return rnn
 
 
-def build_model(rnn_layer, vocab_size, embedding_dim, batch_size):
-    # Number of RNN units
-    rnn_units = 1024
-
+def build_model(rnn_layer, vocab_size, batch_size):
     model = tf.keras.Sequential([
-        tf.keras.layers.Embedding(vocab_size, embedding_dim,
+        tf.keras.layers.Embedding(vocab_size, EMBEDDING_DIM,
                                   batch_input_shape=[batch_size, None]),
-        rnn_layer(rnn_units,
+        rnn_layer(RNN_UNITS,
                   return_sequences=True,
                   recurrent_initializer='glorot_uniform',
                   stateful=True),
@@ -228,12 +225,11 @@ def generate_text(model, char2idx, idx2char, start_string):
 
 
 def main():
-    dataset, embedding_dim, char2idx, idx2char, vocab, vocab_size, steps_per_epoch = load_data()
+    dataset, char2idx, idx2char, vocab, vocab_size, steps_per_epoch = load_data()
     rnn_layer = setup_rnn_layer()
 
     model = build_model(rnn_layer,
                         vocab_size=len(vocab),
-                        embedding_dim=embedding_dim,
                         batch_size=BATCH_SIZE)
 
     example_batch_predictions = None  # HI
@@ -280,7 +276,7 @@ def main():
 
     # Predict
     tf.train.latest_checkpoint(checkpoint_dir)
-    model = build_model(rnn_layer, vocab_size, embedding_dim, batch_size=1)
+    model = build_model(rnn_layer, vocab_size, batch_size=1)
 
     model.load_weights(tf.train.latest_checkpoint(checkpoint_dir))
 
