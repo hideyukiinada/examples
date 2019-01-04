@@ -35,7 +35,7 @@ EMBEDDING_DIM = 256
 RNN_UNITS = 1024
 EPOCHS = 3
 URL = 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt'
-START_STRING = 'ROMEO'
+START_STRING = 'ROMEO:'
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -277,7 +277,6 @@ def main():
     model = build_model(rnn_layer, vocab_size, batch_size=1)
     model.load_weights(tf.train.latest_checkpoint(checkpoint_dir))
     model.build(tf.TensorShape([1, None]))
-    model.summary()
 
     print(generate_text(model, char2idx, idx2char))
 
