@@ -151,6 +151,7 @@ def load_data():
 
     return dataset, embedding_dim, char2idx, idx2char, vocab, vocab_size, steps_per_epoch
 
+
 def setup_rnn_layer():
     if tf.test.is_gpu_available():
         rnn = tf.keras.layers.CuDNNGRU
@@ -164,8 +165,7 @@ def setup_rnn_layer():
     return rnn
 
 
-def build_model(rnn_layer, vocab_size, embedding_dim, batch_size, ):
-
+def build_model(rnn_layer, vocab_size, embedding_dim, batch_size):
     # Number of RNN units
     rnn_units = 1024
 
@@ -173,17 +173,18 @@ def build_model(rnn_layer, vocab_size, embedding_dim, batch_size, ):
         tf.keras.layers.Embedding(vocab_size, embedding_dim,
                                   batch_input_shape=[batch_size, None]),
         rnn_layer(rnn_units,
-            return_sequences=True,
-            recurrent_initializer='glorot_uniform',
-            stateful=True),
+                  return_sequences=True,
+                  recurrent_initializer='glorot_uniform',
+                  stateful=True),
         tf.keras.layers.Dense(vocab_size)
     ])
     return model
 
 
 def loss(labels, logits):
-    #return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
+    # return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
     return tf.keras.backend.sparse_categorical_crossentropy(labels, logits, from_logits=True)
+
 
 def generate_text(model, char2idx, idx2char, start_string):
     # Evaluation step (generating text using the learned model)
@@ -196,7 +197,7 @@ def generate_text(model, char2idx, idx2char, start_string):
 
     # Converting our start string to numbers (vectorizing)
     input_eval = [char2idx[s] for s in start_string]
-    next_input = tf.expand_dims(input_eval, 0) # Equivalent of input_eval = input_eval.reshape([1, input_eval.shape[0])
+    next_input = tf.expand_dims(input_eval, 0)  # Equivalent of input_eval = input_eval.reshape([1, input_eval.shape[0])
 
     # Empty string to store our results
     text_generated = []
