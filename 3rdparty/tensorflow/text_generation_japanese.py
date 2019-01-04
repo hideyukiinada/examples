@@ -205,7 +205,7 @@ def generate_text(model, letter2idx, idx2letter, start_string=START_STRING):
     if start_string not in letter2idx:
         start_string = DEFAULT_START_STRING
 
-    input_eval = [letter2idx[start_string]]
+    input_eval = [letter2idx[s] for s in start_string]
     next_input = tf.expand_dims(input_eval, 0)  # Equivalent of input_eval = input_eval.reshape([1, input_eval.shape[0])
 
     # Empty string to store our results
@@ -232,12 +232,6 @@ def generate_text(model, letter2idx, idx2letter, start_string=START_STRING):
         next_input = tf.expand_dims([predicted_id], 0)
 
         letter = idx2letter[predicted_id]
-        if letter == EOS_MARKER:
-            letter = ".\n"
-        elif letter == CR_MARKER:
-            letter = "\n"
-        else:
-            letter += " "
         text_generated.append(letter)
 
     return (start_string + ''.join(text_generated))
