@@ -182,9 +182,8 @@ def build_model(rnn_layer, vocab_size, embedding_dim, batch_size, ):
 
 
 def loss(labels, logits):
-    #    return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
-    return tf.keras.losses.sparse_categorical_crossentropy(labels, logits)
-
+    #return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
+    return tf.keras.backend.sparse_categorical_crossentropy(labels, logits, from_logits=True)
 
 def generate_text(model, char2idx, idx2char, start_string):
     # Evaluation step (generating text using the learned model)
