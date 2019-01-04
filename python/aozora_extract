@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Extract text from Aozora Bunko's public domain books (https://www.aozora.gr.jp/).
-Specifically this script does the following:
+Extract text from Aozora Bunko's public domain books (https://www.aozora.gr.jp/) for processing text
+data for machine learning.
 
+Specifically this script does the following:
 * Convert encoding from Japanese Shift-JIS to UTF-8.
 * Remove annotations added by editors.
 * Remove meta data at the end of the book.
 
-Please read Aozora Bunko's policy if you are allowed to post a book after processing this way.
+Please read Aozora Bunko's policy to determine if you are allowed to post a book after processing this way.
 
 Usage
 -----
