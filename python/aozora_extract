@@ -72,9 +72,7 @@ def main():
         # Process a single file
         with codecs.open(input_file, "r", encoding="shiftjis") as f_input:
             with open(output_file_path, "w") as f_out:
-
                 for line in f_input:
-
                     r1 = regex.compile(r"［.*?］")
                     r2 = regex.compile(r"《.*?》")
                     if header is True:
