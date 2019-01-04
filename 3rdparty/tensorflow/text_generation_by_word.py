@@ -36,6 +36,7 @@ EMBEDDING_DIM = 256
 RNN_UNITS = 1024
 EPOCHS = 10
 START_STRING = 'ROMEO:'
+DEFAULT_START_STRING = "Romeo" # if START_STRING is not found in text, this string is used.
 URL = 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt'
 FILE_PATH = '/tmp/shakespeare.txt'
 CHECKPOINT_DIR = '/tmp/ml_examples/training_checkpoints_text_generation_by_word'
@@ -54,7 +55,7 @@ def create_tf_dataset():
 
     original_text = open(path_to_file).read()
 
-    filters = '\'!"#$%&()*+,-./:;<=>?@[\]^_`{|}~'
+    filters = '\'!"#$%&()*+,-./:;<=>?@[\]^_`{|}~\n'
     words_in_text = keras.preprocessing.text.text_to_word_sequence(original_text,
                                                                    filters=filters,lower=False, split=' ')
 
@@ -195,7 +196,10 @@ def generate_text(model, word2idx, idx2word, start_string=START_STRING):
     num_words_to_generate = 1000
 
     # Converting our start string to numbers (vectorizing)
-    input_eval = [word2idx[s] for s in start_string]
+    if start_string not in word2idx:
+        start_string = DEFAULT_START_STRING
+
+    input_eval = [word2idx[start_string]]
     next_input = tf.expand_dims(input_eval, 0)  # Equivalent of input_eval = input_eval.reshape([1, input_eval.shape[0])
 
     # Empty string to store our results
@@ -221,7 +225,7 @@ def generate_text(model, word2idx, idx2word, start_string=START_STRING):
         # along with the previous hidden state
         next_input = tf.expand_dims([predicted_id], 0)
 
-        text_generated.append(idx2word[predicted_id])
+        text_generated.append(idx2word[predicted_id] + " ")
 
     return (start_string + ''.join(text_generated))
 
@@ -275,6 +279,16 @@ def main():
     model.compile(optimizer=tf.train.AdamOptimizer(), loss=loss)
 
     checkpoint_callback, checkpoint_dir = setup_checkpoint_callback()
+
+    if Path(checkpoint_dir).exists():
+        tf.train.latest_checkpoint(checkpoint_dir)
+        try:
+            model.load_weights(tf.train.latest_checkpoint(checkpoint_dir))
+            log.info("Loaded weight")
+        except AttributeError:
+            log.info("Weight not found.  Proceeding")
+    else:
+        log.info("Weight not found.  Proceeding")
 
     # 174 batches/step in each epoch. Each batch has 64 samples.
     # Each sample contains a pair of x & y each of which has 100 words
