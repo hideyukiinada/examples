@@ -41,6 +41,7 @@ URL = 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.t
 FILE_PATH = '/tmp/shakespeare.txt'
 CHECKPOINT_DIR = '/tmp/ml_examples/training_checkpoints_text_generation_by_word'
 EOS_MARKER = "<EOS>"
+CR_MARKER = "<CR>"
 
 tf.enable_eager_execution()
 
@@ -58,8 +59,9 @@ def create_tf_dataset():
 
     # Process end of sentence
     updated_text = original_text.replace(". ", EOS_MARKER)
+    updated_text = updated_text.replace("\n", CR_MARKER)
 
-    filters = '\'!"#$%&()*+,-./:;<=>?@[\]^_`{|}~\n'
+    filters = '\'!"#$%&()*+,-./:;<=>?@[\]^_`{|}~'
     words_in_text = keras.preprocessing.text.text_to_word_sequence(updated_text,
                                                                    filters=filters,lower=False, split=' ')
 
@@ -232,6 +234,8 @@ def generate_text(model, word2idx, idx2word, start_string=START_STRING):
         word = idx2word[predicted_id]
         if word == EOS_MARKER:
             word = ".\n"
+        elif word == CR_MARKER:
+            word = "\n"
         else:
             word += " "
         text_generated.append(word)
