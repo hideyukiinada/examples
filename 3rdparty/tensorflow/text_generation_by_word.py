@@ -40,8 +40,8 @@ DEFAULT_START_STRING = "Romeo" # if START_STRING is not found in text, this stri
 URL = 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt'
 FILE_PATH = '/tmp/shakespeare.txt'
 CHECKPOINT_DIR = '/tmp/ml_examples/training_checkpoints_text_generation_by_word'
-EOS_MARKER = " <EOS>"  # Space at the beginning so that EOS will be tokenized separately.
-CR_MARKER = " <CR>" # Space at the beginning so that CR will be tokenized separately.
+EOS_MARKER = " <EOS> "  # Space at the beginning so that EOS will be tokenized separately.
+CR_MARKER = " <CR> " # Space at the beginning so that CR will be tokenized separately.
 
 tf.enable_eager_execution()
 
