@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-The original version of file is downloaded from the below URL:
+The original version of file was downloaded from the below URL:
 https://github.com/tensorflow/docs/blob/master/site/en/tutorials/sequences/text_generation.ipynb
 
 I made extensive modifications to structure the code the way I want as well as annotating.
@@ -26,16 +26,16 @@ import numpy as np
 
 import tensorflow as tf
 
-tf.enable_eager_execution()
-
-FILE_PATH = '/tmp/shakespeare.txt'
 BATCH_SIZE = 64
 BUFFER_SIZE = 10000
 EMBEDDING_DIM = 256
 RNN_UNITS = 1024
-EPOCHS = 3
-URL = 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt'
+EPOCHS = 10
 START_STRING = 'ROMEO:'
+URL = 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt'
+FILE_PATH = '/tmp/shakespeare.txt'
+
+tf.enable_eager_execution()
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -103,9 +103,9 @@ def build_sequence():
 
 
 def split_input_target(chunk):
-    input_text = chunk[:-1]  # everything but the last letter
-    target_text = chunk[1:]  # everything but the first letter
-    return input_text, target_text
+    x = chunk[:-1]  # everything but the last letter
+    y = chunk[1:]  # everything but the first letter
+    return x, y
 
 
 def load_data():
@@ -268,7 +268,11 @@ def main():
 
     checkpoint_callback, checkpoint_dir = setup_checkpoint_callback()
 
-    history = model.fit(dataset.repeat(), epochs=EPOCHS, steps_per_epoch=steps_per_epoch,
+    # 174 batches/step in each epoch. Each batch has 64 samples.
+    # Each sample contains a pair of x & y each of which has 100 characters
+    history = model.fit(dataset.repeat(),  # Repeat dataset indefinitely
+                        epochs=EPOCHS,
+                        steps_per_epoch=steps_per_epoch,
                         callbacks=[checkpoint_callback])
     print("Training completed.")
 
