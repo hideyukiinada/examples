@@ -33,6 +33,9 @@ BATCH_SIZE = 64
 BUFFER_SIZE = 10000
 EMBEDDING_DIM = 256
 RNN_UNITS = 1024
+EPOCHS = 3
+URL = 'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt'
+START_STRING = 'ROMEO'
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -42,8 +45,7 @@ def create_tf_dataset():
     """
     Load Shakespeare data.
     """
-    path_to_file = tf.keras.utils.get_file(FILE_PATH,
-                                           'https://storage.googleapis.com/download.tensorflow.org/data/shakespeare.txt')
+    path_to_file = tf.keras.utils.get_file(FILE_PATH, URL)
 
     text = open(path_to_file).read()
 
@@ -155,7 +157,7 @@ def setup_rnn_layer():
     else:
         import functools
 
-        # Define rnn as GRU(ecurrent_activation='sigmoid')
+        # Define rnn as GRU(current_activation='sigmoid')
         rnn = functools.partial(
             tf.keras.layers.GRU, recurrent_activation='sigmoid')
 
@@ -172,6 +174,9 @@ def build_model(rnn_layer, vocab_size, batch_size):
                   stateful=True),
         tf.keras.layers.Dense(vocab_size)
     ])
+
+    model.summary()
+
     return model
 
 
@@ -180,14 +185,11 @@ def loss(labels, logits):
     return tf.keras.backend.sparse_categorical_crossentropy(labels, logits, from_logits=True)
 
 
-def generate_text(model, char2idx, idx2char, start_string):
+def generate_text(model, char2idx, idx2char, start_string=START_STRING):
     # Evaluation step (generating text using the learned model)
 
     # Number of characters to generate
     num_characters_to_generate = 1000
-
-    # You can change the start string to experiment
-    start_string = 'ROMEO'
 
     # Converting our start string to numbers (vectorizing)
     input_eval = [char2idx[s] for s in start_string]
@@ -221,27 +223,17 @@ def generate_text(model, char2idx, idx2char, start_string):
     return (start_string + ''.join(text_generated))
 
 
-def main():
-    dataset, char2idx, idx2char, vocab, vocab_size, steps_per_epoch = load_data()
-    rnn_layer = setup_rnn_layer()
-
-    model = build_model(rnn_layer,
-                        vocab_size=vocab_size,
-                        batch_size=BATCH_SIZE)
-
-    example_batch_predictions = None  # HI
-    input_example_batch = None  # HI
-    target_example_batch = None  # HI
+def show_untrained_prediction(dataset, model, idx2char):
+    example_batch_predictions = None
+    input_example_batch = None
+    target_example_batch = None
 
     for input_example_batch, target_example_batch in dataset.take(1):
         example_batch_predictions = model(input_example_batch)
         print(example_batch_predictions.shape, "# (batch_size, sequence_length, vocab_size)")
 
-    model.summary()
-
     # sampled_indices = tf.random.categorical(example_batch_predictions[0], num_samples=1)
     sampled_indices = tf.random.multinomial(example_batch_predictions[0], num_samples=1)
-
     sampled_indices = tf.squeeze(sampled_indices, axis=-1).numpy()
 
     print("Input: \n", repr("".join(idx2char[input_example_batch[0]])))
@@ -252,20 +244,29 @@ def main():
     print("Prediction shape: ", example_batch_predictions.shape, " # (batch_size, sequence_length, vocab_size)")
     print("scalar_loss:      ", example_batch_loss.numpy().mean())
 
-    model.compile(
-        optimizer=tf.train.AdamOptimizer(),
-        loss=loss)
 
-    # Directory where the checkpoints will be saved
-    checkpoint_dir = './training_checkpoints'
-    # Name of the checkpoint files
-    checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt_{epoch}")
-
+def setup_checkpoint_callback():
+    checkpoint_dir = './training_checkpoints'  # Directory where the checkpoints will be saved
+    checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt_{epoch}")  # Name of the checkpoint files
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_prefix,
         save_weights_only=True)
+    return checkpoint_callback, checkpoint_dir
 
-    EPOCHS = 3
+
+def main():
+    dataset, char2idx, idx2char, vocab, vocab_size, steps_per_epoch = load_data()
+    rnn_layer = setup_rnn_layer()
+
+    model = build_model(rnn_layer,
+                        vocab_size=vocab_size,
+                        batch_size=BATCH_SIZE)
+
+    show_untrained_prediction(dataset, model, idx2char)
+
+    model.compile(optimizer=tf.train.AdamOptimizer(), loss=loss)
+
+    checkpoint_callback, checkpoint_dir = setup_checkpoint_callback()
 
     history = model.fit(dataset.repeat(), epochs=EPOCHS, steps_per_epoch=steps_per_epoch,
                         callbacks=[checkpoint_callback])
@@ -274,14 +275,11 @@ def main():
     # Predict
     tf.train.latest_checkpoint(checkpoint_dir)
     model = build_model(rnn_layer, vocab_size, batch_size=1)
-
     model.load_weights(tf.train.latest_checkpoint(checkpoint_dir))
-
     model.build(tf.TensorShape([1, None]))
-
     model.summary()
 
-    print(generate_text(model, char2idx, idx2char, start_string="ROMEO: "))
+    print(generate_text(model, char2idx, idx2char))
 
 
 if __name__ == "__main__":
