@@ -189,14 +189,14 @@ def generate_text(model, char2idx, idx2char, start_string):
     # Evaluation step (generating text using the learned model)
 
     # Number of characters to generate
-    num_generate = 1000
+    num_characters_to_generate = 1000
 
     # You can change the start string to experiment
     start_string = 'ROMEO'
 
     # Converting our start string to numbers (vectorizing)
     input_eval = [char2idx[s] for s in start_string]
-    input_eval = tf.expand_dims(input_eval, 0)
+    next_input = tf.expand_dims(input_eval, 0) # Equivalent of input_eval = input_eval.reshape([1, input_eval.shape[0])
 
     # Empty string to store our results
     text_generated = []
@@ -208,8 +208,8 @@ def generate_text(model, char2idx, idx2char, start_string):
 
     # Here batch size == 1
     model.reset_states()
-    for i in range(num_generate):
-        predictions = model(input_eval)
+    for i in range(num_characters_to_generate):
+        predictions = model(next_input)
         # remove the batch dimension
         predictions = tf.squeeze(predictions, 0)
 
@@ -219,7 +219,7 @@ def generate_text(model, char2idx, idx2char, start_string):
 
         # We pass the predicted word as the next input to the model
         # along with the previous hidden state
-        input_eval = tf.expand_dims([predicted_id], 0)
+        next_input = tf.expand_dims([predicted_id], 0)
 
         text_generated.append(idx2char[predicted_id])
 
