@@ -276,7 +276,7 @@ def main():
 
     # Predict
     tf.train.latest_checkpoint(checkpoint_dir)
-    model = build_model(vocab_size, embedding_dim, rnn_units, batch_size=1)
+    model = build_model(rnn, vocab_size, embedding_dim, rnn_units, batch_size=1)
 
     model.load_weights(tf.train.latest_checkpoint(checkpoint_dir))
 
