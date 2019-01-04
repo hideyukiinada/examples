@@ -61,6 +61,10 @@ def main():
         output_dir_path.mkdir(parents=True, exist_ok=True)
         log.info("Created: %s" % (output_dir_path))
 
+    # Compile regular expressions
+    r1 = regex.compile(r"［.*?］")
+    r2 = regex.compile(r"《.*?》")
+    
     # Process files
     for input_file in input_dir_path.glob("*.txt"):
         output_file_path = output_dir_path / input_file.name
@@ -73,8 +77,6 @@ def main():
         with codecs.open(input_file, "r", encoding="shiftjis") as f_input:
             with open(output_file_path, "w") as f_out:
                 for line in f_input:
-                    r1 = regex.compile(r"［.*?］")
-                    r2 = regex.compile(r"《.*?》")
                     if header is True:
                         if line.find("-----") >= 0:
                             if note_section is False:
