@@ -34,10 +34,10 @@ import tensorflow as tf
 BATCH_SIZE = 64
 BUFFER_SIZE = 10000
 EMBEDDING_DIM = 256
-RNN_UNITS = 1024
-EPOCHS = 100
-START_STRING = '私'
-DEFAULT_START_STRING = "それ"  # if START_STRING is not found in text, this string is used.
+RNN_UNITS = 2048
+EPOCHS = 200
+START_STRING = '私は'
+DEFAULT_START_STRING = "彼は"  # if START_STRING is not found in text, this string is used.
 INPUT_DIR = '/tmp/ml_examples/japanese_books'
 CHECKPOINT_DIR = '/tmp/ml_examples/training_checkpoints_text_generation_japanese'
 
@@ -49,7 +49,7 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 def create_tf_dataset():
     """
-    Load Shakespeare data.
+    Load text data.
     """
 
     input_dir_path = Path(INPUT_DIR)
@@ -147,7 +147,7 @@ def load_data():
             print("  input: {} ({:s})".format(input_idx, repr(idx2letter[input_idx])))
             print("  expected output: {} ({:s})".format(target_idx, repr(idx2letter[target_idx])))
 
-    steps_per_epoch = examples_per_epoch // BATCH_SIZE  # e.g. steps per epoch = 174
+    steps_per_epoch = examples_per_epoch // BATCH_SIZE
 
     # Buffer size to shuffle the dataset
     # (TF data is designed to work with possibly infinite sequences,
@@ -296,7 +296,6 @@ def main():
     else:
         log.info("Weight not found.  Proceeding")
 
-    # 174 batches/step in each epoch. Each batch has 64 samples.
     # Each sample contains a pair of x & y each of which has 100 letters
     history = model.fit(dataset.repeat(),  # Repeat dataset indefinitely
                         epochs=EPOCHS,
