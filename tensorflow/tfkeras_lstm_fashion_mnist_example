@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+"""
+A Fashion MNIST example using tf.keras and LSTM.
+
+This is a modified version of my Fashion MNIST example code below:
+https://github.com/hideyukiinada/ml/blob/master/examples/tfkeras_fashion_mnist_example
+
+Changes are the following:
+1) Replaced two conv layers with a single LSTM layer (see credit below)
+2) Removed lines to reshaped x_train and x_test from (60,000 or 10,000, 28, 28) to (60,000 or 10,000, 28, 28, 1):
+
+    x_train = (x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 1)).astype(np.float32)
+    x_test = (x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], 1)).astype(np.float32)
+
+   This is to keep the input shape in 3D per LSTM layer's requirements.
+
+Credit
+------
+Using LSTM for MNIST was covered in the below video, and I used the video as my reference for the LSTM layer:
+sentdex, Recurrent Neural Networks (RNN) - Deep Learning w/ Python, TensorFlow & Keras p.7, https://www.youtube.com/watch?v=BSpXCRTOLJA
+
+
+Accuracy
+--------
+Accuracy with two epochs was 86.35%.
+
+References
+----------
+https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv2D
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+import tensorflow as tf
+import numpy as np
+import keras
+
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense
+from tensorflow.python.keras.layers import LSTM
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+EPOCH_SIZE = 2
+
+
+def example():
+    """Train the model and predict.
+    """
+
+    # Download fashion mnist data via Keras API
+    (x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
+
+    # Change the value from 0<= x <= 255 in UINT8 to 0 <= x <= 1 in float
+    x_train = x_train / 255.0
+    x_test = x_test / 255.0
+
+    y_train_one_hot = y_train.reshape(y_train.shape[0], 1)
+    y_train_one_hot = keras.utils.to_categorical(y_train_one_hot, 10).astype(np.float32)
+
+    y_test_one_hot = y_test.reshape(y_test.shape[0], 1)
+    y_test_one_hot = keras.utils.to_categorical(y_test_one_hot, 10).astype(np.float32)
+
+    # Set up a model
+    model = Sequential()
+    model.add(LSTM(512, input_shape=x_train.shape[1:], return_sequences=False)) # input_shape.  Change (60000, 28, 28) to (28, 28)
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(10, activation='softmax'))
+
+    # Note the use of tf.train.AdamOptimizer instead of tf.keras.optimizers.Adam
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.999)
+    model.compile(loss=tf.keras.losses.categorical_crossentropy,
+                  optimizer=optimizer, metrics=['accuracy'])
+
+    model.fit(x=x_train, y=y_train_one_hot, epochs=EPOCH_SIZE)
+
+    y_hat_test_one_hot = model.predict(x_test)
+
+    total_size = y_hat_test_one_hot.shape[0]
+    y_hat_test_one_hot_int = np.argmax(y_hat_test_one_hot, axis=1)  # to int from one-hot vector
+
+    matched_indices = (y_hat_test_one_hot_int == y_test)
+    matched_count = y_test[matched_indices].shape[0]
+    log.info(
+        "Matched: %d out of Total: %d (%f percent)" % (matched_count, total_size, matched_count * 100 / total_size))
+
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
