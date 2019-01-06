@@ -26,9 +26,7 @@ EPOCH_SIZE = 10
 BATCH_SIZE = 32
 
 def example():
-    """An example to show how to use TensorFlow class to do an equivalent operation as NeuralNetwork class.
-
-    This file downloads Fashion MNIST data via Keras util, but does not use Keras functionality for neural network.
+    """An example to train the model using MNIST data and predict.
     """
     tf.reset_default_graph()
 
