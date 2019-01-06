@@ -6,6 +6,10 @@ This is a re-implementation of my Fashion MNIST example code in Tensorflow using
 below:
 https://github.com/hideyukiinada/ml/blob/master/examples/weight_persistence_mnist_example
 
+References
+----------
+https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv2D
+
 __author__ = "Hide Inada"
 __copyright__ = "Copyright 2018, Hide Inada"
 __license__ = "The MIT License"
