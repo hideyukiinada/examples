@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+"""
+A gensim example script.
+
+Note
+----
+Pretrained word2vec model is more than 4G bytes (3,644,258,522 bytes).
+If you load this on a machine with the small RAM, it may choke the machine.
+
+References
+----------
+https://radimrehurek.com/gensim/models/keyedvectors.html
+http://mccormickml.com/2016/04/12/googles-pretrained-word2vec-model-in-python/
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+from pathlib import Path
+
+import gensim
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+WORD2VEC_MODEL_PATH="../../../../../ai/dataset/word2vec/GoogleNews-vectors-negative300.bin"
+
+def example():
+    """An example.
+    """
+
+    model = gensim.models.KeyedVectors.load_word2vec_format(WORD2VEC_MODEL_PATH, binary=True)
+    result = model.most_similar(positive=['cat', 'puppy'], negative=['dog'])
+    print(result)
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
