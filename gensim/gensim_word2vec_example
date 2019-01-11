@@ -1,0 +1,100 @@
+#!/usr/bin/env python
+"""
+A gensim word2vec example script.
+
+
+References
+----------
+https://radimrehurek.com/gensim/models/word2vec.html#usage-examples
+
+Parameter description for Word2Vec:
+http://kavita-ganesan.com/gensim-word2vec-tutorial-starter-code/#.XDg3Qs9KhsZ
+
+Updating the model:
+https://www.machinelearningplus.com/nlp/gensim-tutorial/
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+from pathlib import Path
+
+import gensim
+from gensim.models.word2vec import Word2Vec
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+MODEL_PATH = "/tmp/ml_examples/word2vec_example.model"
+
+
+def example():
+    """An example.
+    """
+
+    text1 = """Saint Bernards are a dog breed originally from St. Bernard Pass in Switzerland. 
+    They are very gentle and friendly to people.
+    They could be long-haired and short-haired.  Irrespective of hair-length, they shed a lot.
+    They grow to weigh more than 150 pounds, so training them while they are still small is important.
+    They enjoy playing with other dogs.
+    """
+
+    text2 = """Cats are very independent.  They may or may not get along with dogs. There are many varieties
+    of cats.  Especially, Persian cats are very beautiful."""
+
+    text3 = """The Old English Sheepdog is a herding breed.  They are very loyal to their human family
+     members.  In terms of appearance, there is some similarity between them and Poodles.  They sport
+     beautiful long curly hair that is a mixture of gray, white and black.  They like to play with
+     other dogs but you need to pay close attention to notice if the play is getting
+     too rough so that you can intervene before the play could turn into a fighting."""
+
+    word_list = gensim.utils.simple_preprocess(text1)
+    word_list2 = gensim.utils.simple_preprocess(text2)
+    word_list3 = gensim.utils.simple_preprocess(text3)
+
+    model = Word2Vec([word_list, word_list2],
+                     size=5,  # Number of dimension for a word vector
+                     window=5,
+                     min_count=1,
+                     workers=4)  # Num threads
+    model.save(MODEL_PATH)
+
+    if Path(MODEL_PATH).exists():
+        log.info("Model file created at %s" % (Path(MODEL_PATH)))
+
+    model = Word2Vec.load(MODEL_PATH)
+    log.info("Model information")
+    log.info("-----------------")
+    log.info("corpus_count:%d" % (model.corpus_count))
+    log.info("iter:%d" % (model.iter))
+    log.info("epochs:%d" % (model.epochs))
+
+    # Train with additional text
+    model.build_vocab([word_list3], update=True) # Add vocabulary first
+
+    # See https://radimrehurek.com/gensim/models/word2vec.html why model.iter is specified here
+    # and why total_examples is set to 1.
+    model.train([word_list3], total_examples=1, epochs=model.iter)
+
+    log.info("corpus_count:%d" % (model.corpus_count))
+
+    names = ['dog', 'cats', 'curly']
+
+    for name in names:
+        v = model[name]
+        log.info("Word vector for '%s'" % (name))
+        log.info(v)
+
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
