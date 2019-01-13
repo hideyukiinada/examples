@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+"""
+
+CountVectorizer Example
+
+References
+----------
+https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+from pathlib import Path
+
+import numpy as np
+import sklearn.datasets
+from sklearn.feature_extraction.text import CountVectorizer  # Note feature_extraction
+
+SAMPLE_DIR = Path("/tmp/ml_examples/sk/count")
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+
+def create_test_files():
+    """
+    Create test files under the sample directory.
+    """
+
+    test_sample_dir = SAMPLE_DIR  # Directory where the checkpoints will be saved
+
+    if test_sample_dir.exists() is False:
+        test_sample_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create directories
+    dirs = ["apple", "banana", "coconut"]
+    for dir in dirs:
+        dir = test_sample_dir / Path(dir)
+        if dir.exists() is False:
+            dir.mkdir(parents=True, exist_ok=True)
+            log.info("%s created" % (dir))
+        else:
+            log.info("%s found. Skip creation" % (dir))
+
+    # Create files
+    files = ["apple/apple.txt", "banana/banana.txt", "coconut/coconut.txt"]
+    text_body = ["Apples Apples apples Apples are delicious.", "Bananas are good for breakfast.",
+                 "You can make juice out of coconuts. apples?"]
+    for i, f in enumerate(files):
+        text_path = test_sample_dir / Path(f)
+        if text_path.exists() is False:
+            with open(text_path, "w") as fh:
+                fh.write(text_body[i])
+            log.info("%s written" % (text_path))
+
+
+def example():
+    """An example.
+    """
+    create_test_files()
+
+    bunch = sklearn.datasets.load_files(SAMPLE_DIR, load_content=True)
+    print(bunch.data)
+
+    cv = CountVectorizer()
+    cv.fit(bunch.data)  # build a vocabulary
+    counted_data = cv.transform(bunch.data)  # tokenize using the vocabulary
+    # Each doc is stored on a single row of a sparse matrix
+    print(counted_data)
+    """
+    An example of "apple" appearing 4 times in doc #2 (the first one in the original array:
+    (2, 0)	4
+    (2, 1)	1
+    (2, 6)	1
+    """
+
+    print(counted_data.shape)  # (# of doc, vocabulary size)
+
+    # Show words in the vocabulary
+    # Words are converted to lower-case.
+    # Note that this is stored in vectorizer
+    print(cv.get_feature_names())
+
+    # Show file name
+    for doc_id in range(counted_data.shape[0]):
+        print(bunch.filenames[doc_id])
+
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
