@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+"""
+A gensim doc2vec example script.
+
+
+References
+----------
+https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/doc2vec-lee.ipynb
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import sys
+import logging
+
+from pathlib import Path
+
+import gensim
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+MODEL_PATH = "/tmp/ml_examples/doc2vec_example.model"
+
+# Training dataset
+text1 = """Saint Bernards are a dog breed originally from St. Bernard Pass in Switzerland. 
+This dog breed is known to be very gentle and friendly to people.  You may have seen their picture on the snow.
+They could be long-haired and short-haired.  Irrespective of hair-length, they shed a lot.
+They grow to weigh more than 150 pounds, so training them while they are still small is important.
+They enjoy playing with other dogs.
+"""
+
+text2 = """Cats are very independent.  They may or may not get along with other pets. There are many varieties and breeds 
+of cats.  Especially, Persian cats are very beautiful."""
+
+text3 = """The Old English Sheepdog is a herding breed.  They are very loyal to their human family
+ members.  In terms of appearance, there is some similarity between them and Poodles.  They sport
+ beautiful long curly hair that is a mixture of gray, white and black.  They like to play with
+ other dogs but you need to pay close attention to notice if the play is getting
+ too rough so that you can intervene before the play could turn into a fighting."""
+
+text4 = """Saint Bernards were originally bred to rescue people who were stranded in snow."""
+text5 = """Baseball is one of the most popular sports.  Some play and some watch.  Either way, it's fun."""
+
+# Test dataset
+test_1 = """People were helped by Saint Bernards under snowy weather.  Please be nice to Saint Bernards."""
+test_2 = """Some people like to play baseball.  For them, it's their favorite sport."""
+
+
+def example():
+    """An example.
+    """
+
+    # For training dataset, tag each data so that we can specify this when we get the vector for the data.
+    word_list = gensim.models.doc2vec.TaggedDocument(gensim.utils.simple_preprocess(text1.lower()), ["D0"])
+    word_list2 = gensim.models.doc2vec.TaggedDocument(gensim.utils.simple_preprocess(text2.lower()), ["C1"])
+    word_list3 = gensim.models.doc2vec.TaggedDocument(gensim.utils.simple_preprocess(text3.lower()), ["OES1"])
+    word_list4 = gensim.models.doc2vec.TaggedDocument(gensim.utils.simple_preprocess(text4.lower()), ["D1"])
+    word_list5 = gensim.models.doc2vec.TaggedDocument(gensim.utils.simple_preprocess(text5.lower()), ["B1"])
+
+    # Test dataset to word list
+    test_list = gensim.utils.simple_preprocess(test_1)
+    test_list2 = gensim.utils.simple_preprocess(test_2)
+
+    # Convert to corpus
+    lines_train = [word_list, word_list2, word_list3, word_list4, word_list5]
+    lines_test = [test_list, test_list2]
+
+    # Instantiate Doc2Vec, build vocabulary and train
+    model = gensim.models.doc2vec.Doc2Vec(vector_size=50, min_count=2, epochs=40)
+    model.build_vocab(lines_train)
+    log.info("Build completed")
+
+    model.train(lines_train, total_examples=model.corpus_count, epochs=model.epochs)
+    log.info("Training completed")
+
+    # Save the model
+    model.save(MODEL_PATH)
+
+    if Path(MODEL_PATH).exists():
+        log.info("Model file created at %s" % (Path(MODEL_PATH)))
+
+    # Load the model
+    m = gensim.models.doc2vec.Doc2Vec.load(MODEL_PATH)
+
+    # Predict embedding for the first example of test data
+    vector_for_test_example = m.infer_vector(lines_test[0])
+
+    # Look for the top 2 data samples in training
+    similar_docs_in_training_set = m.docvecs.most_similar([vector_for_test_example],
+                                                          topn=2)  # Change to len(model.docvecs) for all training set docs
+    log.info("Similar docs to the first test example:")
+    log.info(similar_docs_in_training_set)
+
+    word = "dogs"
+    log.info("Similar words to %s" % (word))
+    similar_words_in_training_set = m.most_similar([word], topn=2)
+    log.info(similar_words_in_training_set)
+
+    # Check to see how it handles words that are not in the vocabulary
+    vector = m.infer_vector(["non_existing_word", "sorry"])
+    log.info(vector)
+
+    # Get vector by the tag
+    vector = m["D0"]
+    log.info(vector)
+
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
