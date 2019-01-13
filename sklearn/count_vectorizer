@@ -50,7 +50,8 @@ def create_test_files():
 
     # Create files
     files = ["apple/apple.txt", "banana/banana.txt", "coconut/coconut.txt"]
-    text_body = ["Apples Apples apples Apples are delicious.", "Bananas are good for breakfast.",
+    text_body = ["Apples Apples apples Apples are delicious.  They are from New Hampshire.",
+                 "Bananas are good for breakfast. What's new?  We can make the best Banana Sundae, our new menu item!",
                  "You can make juice out of coconuts. apples?"]
     for i, f in enumerate(files):
         text_path = test_sample_dir / Path(f)
@@ -90,6 +91,22 @@ def example():
     # Show file name
     for doc_id in range(counted_data.shape[0]):
         print(bunch.filenames[doc_id])
+
+    # Bigrams
+    cv = CountVectorizer(ngram_range=(2, 2))  # select bigram only (min 2 words, max 2 words)
+    cv.fit(bunch.data)  # build a vocabulary
+    counted_data = cv.transform(bunch.data)  # tokenize using the vocabulary
+    print(counted_data)
+    print(counted_data.shape)  # (# of doc, vocabulary size)
+    print(cv.get_feature_names())
+
+    # Bigrams and a word
+    cv = CountVectorizer(ngram_range=(1, 2))  # select bigram only (min 1 word, max 2 words)
+    cv.fit(bunch.data)  # build a vocabulary
+    counted_data = cv.transform(bunch.data)  # tokenize using the vocabulary
+    print(counted_data)
+    print(counted_data.shape)  # (# of doc, vocabulary size)
+    print(cv.get_feature_names())
 
 
 def main():
