@@ -93,8 +93,6 @@ http://www.manythings.org/anki/
     RNN Encoder-Decoder for Statistical Machine Translation
     https://arxiv.org/abs/1406.1078
 '''
-from __future__ import print_function
-
 from keras.models import Model
 from keras.layers import Input, LSTM, Dense
 import numpy as np
@@ -104,7 +102,7 @@ epochs = 100  # Number of epochs to train for.
 latent_dim = 256  # Latent dimensionality of the encoding space.  aka, number of units in LSTM hidden layer
 num_samples = 10000  # Number of samples to train on.
 # Path to the data txt file on disk.
-data_path = '../../../../../ai/dataset/languages/fra.txt'
+data_path = '../../../../../../ai/dataset/languages/fra.txt'
 
 # Vectorize the data.
 input_texts = []
@@ -235,11 +233,13 @@ model.fit([encoder_input_data, decoder_input_data], decoder_target_data, # [engl
 model.save('/tmp/ml_examples/s2s.h5')
 
 # Next: inference mode (sampling).
+# Note that this means we are missing decoder data (French data) and
+# We need to figure out the French data from encoder state (English data).
 # Here's the drill:
-# 1) encode input and retrieve initial decoder state
+# 1) encode input (English) and retrieve initial decoder state
 # 2) run one step of decoder with this initial state
 # and a "start of sequence" token as target.
-# Output will be the next target token
+# Output will be the next target token (French)
 # 3) Repeat with the current target token and current states
 
 # Define sampling models
