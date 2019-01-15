@@ -3,6 +3,8 @@
 The original version of file is downloaded from the below URL:
 https://github.com/keras-team/keras/blob/master/examples/lstm_seq2seq.py
 
+I added more annotations to the code.
+
 Copyright notice for the original file
 https://github.com/keras-team/keras/blob/master/LICENSE
 ---------------------------------------
@@ -99,36 +101,51 @@ import numpy as np
 
 batch_size = 64  # Batch size for training.
 epochs = 100  # Number of epochs to train for.
-latent_dim = 256  # Latent dimensionality of the encoding space.
+latent_dim = 256  # Latent dimensionality of the encoding space.  aka, number of units in LSTM hidden layer
 num_samples = 10000  # Number of samples to train on.
 # Path to the data txt file on disk.
-data_path = 'fra-eng/fra.txt'
+data_path = '../../../../../ai/dataset/languages/fra.txt'
 
 # Vectorize the data.
 input_texts = []
 target_texts = []
 input_characters = set()
 target_characters = set()
+
+# Open English phrases to French translation pair file
 with open(data_path, 'r', encoding='utf-8') as f:
     lines = f.read().split('\n')
+
+# Break read data into input and target buffer
 for line in lines[: min(num_samples, len(lines) - 1)]:
-    input_text, target_text = line.split('\t')
+    input_text, target_text = line.split('\t')  # input and target are separated by a tab in the data file.
+
     # We use "tab" as the "start sequence" character
     # for the targets, and "\n" as "end sequence" character.
     target_text = '\t' + target_text + '\n'
+
     input_texts.append(input_text)
     target_texts.append(target_text)
+
+    # Create set of characters for both input and target
     for char in input_text:
         if char not in input_characters:
             input_characters.add(char)
+
     for char in target_text:
         if char not in target_characters:
             target_characters.add(char)
 
+# Now convert the set to a sorted list
 input_characters = sorted(list(input_characters))
 target_characters = sorted(list(target_characters))
+
+# Calculate the number of characters used for both input and target
 num_encoder_tokens = len(input_characters)
 num_decoder_tokens = len(target_characters)
+
+# Determine the size of sequence.
+# Set it to the length of the longest input text.
 max_encoder_seq_length = max([len(txt) for txt in input_texts])
 max_decoder_seq_length = max([len(txt) for txt in target_texts])
 
@@ -138,11 +155,23 @@ print('Number of unique output tokens:', num_decoder_tokens)
 print('Max sequence length for inputs:', max_encoder_seq_length)
 print('Max sequence length for outputs:', max_decoder_seq_length)
 
+# Define char to ID mapping
+# input_token_index['a'] should return an ID for the character.
 input_token_index = dict(
     [(char, i) for i, char in enumerate(input_characters)])
 target_token_index = dict(
     [(char, i) for i, char in enumerate(target_characters)])
 
+# Create 3 numpy data:
+# 1. Encoder input for input language (English)
+# 2. Decoder input for target language (French)
+# 3. Decoder output for target language (French)
+# #2 and #3 are off by one character as the objective of the network
+# is to predict #3 from #2 and the output state of #1.
+# We need a 3D data to feed to LSTM.
+# 1. Batch size
+# 2. For each training sample: sequence length, corresponding to a sentence
+# 3. For each training sample: one-hot vector, corresponding to a character
 encoder_input_data = np.zeros(
     (len(input_texts), max_encoder_seq_length, num_encoder_tokens),
     dtype='float32')
@@ -154,7 +183,10 @@ decoder_target_data = np.zeros(
     dtype='float32')
 
 for i, (input_text, target_text) in enumerate(zip(input_texts, target_texts)):
+    # i = batch index
+
     for t, char in enumerate(input_text):
+        # t = char index within a sentence (aka timestep in this case)
         encoder_input_data[i, t, input_token_index[char]] = 1.
     for t, char in enumerate(target_text):
         # decoder_target_data is ahead of decoder_input_data by one timestep
@@ -163,23 +195,30 @@ for i, (input_text, target_text) in enumerate(zip(input_texts, target_texts)):
             # decoder_target_data will be ahead by one timestep
             # and will not include the start character.
             decoder_target_data[i, t - 1, target_token_index[char]] = 1.
+# At this point, data is fully set in 3 ndarrays
 
 # Define an input sequence and process it.
-encoder_inputs = Input(shape=(None, num_encoder_tokens))
+# We need to define the following:
+# encoder LSTM which outputs output and two states
+# decoder LSTM
+encoder_inputs = Input(shape=(None, num_encoder_tokens))  # Note that we only pass the size of one-hot vector here.
 encoder = LSTM(latent_dim, return_state=True)
-encoder_outputs, state_h, state_c = encoder(encoder_inputs)
-# We discard `encoder_outputs` and only keep the states.
-encoder_states = [state_h, state_c]
+encoder_outputs, state_h, state_c = encoder(encoder_inputs) # We discard `encoder_outputs` and only keep the states.
+encoder_states = [state_h, state_c]  # This is passed to decoder LSTM with initial_states argument
 
 # Set up the decoder, using `encoder_states` as initial state.
-decoder_inputs = Input(shape=(None, num_decoder_tokens))
+decoder_inputs = Input(shape=(None, num_decoder_tokens)) # Number of unique French characters in the text
 # We set up our decoder to return full output sequences,
 # and to return internal states as well. We don't use the
 # return states in the training model, but we will use them in inference.
 decoder_lstm = LSTM(latent_dim, return_sequences=True, return_state=True)
+
+# Pass two kinds of input: 1) Decoder (French input text in one-hot vector), 2) Encoder state (two of them)
 decoder_outputs, _, _ = decoder_lstm(decoder_inputs,
                                      initial_state=encoder_states)
+# Make the decoder output processed in a dense layer
 decoder_dense = Dense(num_decoder_tokens, activation='softmax')
+# Note that dimension here is also the # of unique French characters.
 decoder_outputs = decoder_dense(decoder_outputs)
 
 # Define the model that will turn
@@ -188,12 +227,12 @@ model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
 
 # Run training
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
-model.fit([encoder_input_data, decoder_input_data], decoder_target_data,
+model.fit([encoder_input_data, decoder_input_data], decoder_target_data, # [english, french], 1-char-shifted french
           batch_size=batch_size,
           epochs=epochs,
           validation_split=0.2)
 # Save model
-model.save('s2s.h5')
+model.save('/tmp/ml_examples/s2s.h5')
 
 # Next: inference mode (sampling).
 # Here's the drill:
