@@ -21,8 +21,6 @@ import logging
 import argparse
 
 from pathlib import Path
-import codecs
-import regex
 
 OUTPUT_FILE = "/tmp/ml_examples/sentence_pairs.txt"
 
@@ -109,7 +107,7 @@ def extract(data_dir=None, src_lang=None, target_lang=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Tagoeba sentence pair generator')
+    parser = argparse.ArgumentParser(description='Tatoeba sentence pair generator')
     parser.add_argument('--src',
                         type=str,
                         default="eng",
