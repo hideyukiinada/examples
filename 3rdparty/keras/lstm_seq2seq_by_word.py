@@ -102,6 +102,9 @@ epochs = 100  # Number of epochs to train for.
 latent_dim = 256  # Latent dimensionality of the encoding space for LSTM.
 num_samples = 10000  # Number of samples to train on.
 
+START_TOKEN="<START>"
+END_TOKEN="<EOS>"
+
 # Path to the data txt file on disk.
 data_path = '../../../../../../ai/dataset/languages/fra.txt'
 
@@ -119,10 +122,9 @@ with open(data_path, 'r', encoding='utf-8') as f:
 for line in lines[: min(num_samples, len(lines) - 1)]:
     input_text, target_text = line.split('\t')  # input and target are separated by a tab in the data file.
 
-    # We use "tab" as the "start sequence" word
-    # for the targets, and "\n" as "end sequence" word.
-    # Add space so that both tab and \n are split into a separate token.
-    target_text = '\t' + ' ' + target_text + ' ' + '\n'
+    # Enclose target_text with start token and end token.
+    # Add space so that both tokens are split into a separate token.
+    target_text = START_TOKEN + ' ' + target_text + ' ' + END_TOKEN
 
     input_texts.append(input_text)
     target_texts.append(target_text)
@@ -135,7 +137,7 @@ for line in lines[: min(num_samples, len(lines) - 1)]:
         if word not in target_words:
             target_words.add(word)
 
-    for word in ['\t', '\n']: # Add start sequence and end of sequence tokens.
+    for word in [START_TOKEN, END_TOKEN]: # Add start sequence and end of sequence tokens.
         if word not in target_words:
             target_words.add(word)
 
@@ -274,7 +276,7 @@ def decode_sequence(input_seq):
     target_seq = np.zeros((1, 1, num_decoder_tokens)) # batch size=1, word count = 1, one hot vector size = num French chars.
 
     # Populate the first character of target sequence with the start character.
-    target_seq[0, 0, target_word2id['\t']] = 1.
+    target_seq[0, 0, target_word2id[START_TOKEN]] = 1.
 
     # Sampling loop for a batch of sequences
     # (to simplify, here we assume a batch of size 1).
@@ -291,7 +293,7 @@ def decode_sequence(input_seq):
 
         # Exit condition: either hit max length
         # or find stop character.
-        if (sampled_word == '\n' or
+        if (sampled_word == END_TOKEN or
            len(decoded_sentence) > max_decoder_seq_length):
             stop_condition = True
 
