@@ -243,10 +243,11 @@ model.save('/tmp/ml_examples/s2s.h5')
 # 3) Repeat with the current target token and current states
 
 # Define sampling models
-encoder_model = Model(encoder_inputs, encoder_states)
+encoder_model = Model(encoder_inputs, encoder_states) # (Input(shape=(None, num_encoder_tokens)), [state_h, state_c])
+encoder_model.save('/tmp/ml_examples/s2s_encoder.h5')
 
-decoder_state_input_h = Input(shape=(latent_dim,))
-decoder_state_input_c = Input(shape=(latent_dim,))
+decoder_state_input_h = Input(shape=(latent_dim,)) # hidden state
+decoder_state_input_c = Input(shape=(latent_dim,)) # cell state
 decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
 decoder_outputs, state_h, state_c = decoder_lstm(
     decoder_inputs, initial_state=decoder_states_inputs)
@@ -255,6 +256,8 @@ decoder_outputs = decoder_dense(decoder_outputs)
 decoder_model = Model(
     [decoder_inputs] + decoder_states_inputs,
     [decoder_outputs] + decoder_states)
+
+decoder_model.save('/tmp/ml_examples/s2s_decoder.h5')
 
 # Reverse-lookup token index to decode sequences back to
 # something readable.
@@ -266,10 +269,11 @@ reverse_target_char_index = dict(
 
 def decode_sequence(input_seq):
     # Encode the input as state vectors.
-    states_value = encoder_model.predict(input_seq)
+    states_value = encoder_model.predict(input_seq) # Pass "Hello, world" and get states value.
 
     # Generate empty target sequence of length 1.
-    target_seq = np.zeros((1, 1, num_decoder_tokens))
+    target_seq = np.zeros((1, 1, num_decoder_tokens)) # batch size=1, word count = 1, one hot vector size = num French chars.
+
     # Populate the first character of target sequence with the start character.
     target_seq[0, 0, target_token_index['\t']] = 1.
 
@@ -281,9 +285,9 @@ def decode_sequence(input_seq):
         output_tokens, h, c = decoder_model.predict(
             [target_seq] + states_value)
 
-        # Sample a token
-        sampled_token_index = np.argmax(output_tokens[0, -1, :])
-        sampled_char = reverse_target_char_index[sampled_token_index]
+        # Sample a token (predict a char)
+        sampled_token_index = np.argmax(output_tokens[0, -1, :]) # Predicted char index in French
+        sampled_char = reverse_target_char_index[sampled_token_index] # ID to predicted char
         decoded_sentence += sampled_char
 
         # Exit condition: either hit max length
@@ -305,8 +309,8 @@ def decode_sequence(input_seq):
 for seq_index in range(100):
     # Take one sequence (part of the training set)
     # for trying out decoding.
-    input_seq = encoder_input_data[seq_index: seq_index + 1]
-    decoded_sentence = decode_sequence(input_seq)
+    input_seq = encoder_input_data[seq_index: seq_index + 1] # grab one sentence from input text array.
+    decoded_sentence = decode_sequence(input_seq) # translate
     print('-')
     print('Input sentence:', input_texts[seq_index])
     print('Decoded sentence:', decoded_sentence)
