@@ -159,17 +159,12 @@ print('Max sequence length for inputs:', max_encoder_seq_length)
 print('Max sequence length for outputs:', max_decoder_seq_length)
 
 # Define word to ID mapping
-input_token_index = dict(
-    [(w, i) for i, w in enumerate(input_words)])
-target_token_index = dict(
-    [(w, i) for i, w in enumerate(target_words)])
+input_word2id = {w:i for i, w in enumerate(input_words)}
+target_word2id = {w:i for i, w in enumerate(target_words)}
 
-# Reverse-lookup token index to decode sequences back to
-# something readable.
-reverse_input_word_index = dict(
-    (i, w) for w, i in input_token_index.items())
-reverse_target_word_index = dict(
-    (i, w) for w, i in target_token_index.items())
+# ID to word mapping
+reverse_input_id2word = {i: w for w, i in input_word2id.items()}
+reverse_target_id2word = {i: w for w, i in target_word2id.items()}
 
 # Create 3 numpy data:
 # 1. Encoder input for input language (English)
@@ -196,14 +191,14 @@ for i, (input_text, target_text) in enumerate(zip(input_texts, target_texts)):
 
     for t, word in enumerate(input_text.split()):  # FIXME.  Use an NLP package.
         # t = char index within a sentence (aka timestep in this case)
-        encoder_input_data[i, t, input_token_index[word]] = 1.
+        encoder_input_data[i, t, input_word2id[word]] = 1.
     for t, word in enumerate(target_text.split()): # FIXME.  Use an NLP package.
         # decoder_target_data is ahead of decoder_input_data by one timestep
-        decoder_input_data[i, t, target_token_index[word]] = 1.
+        decoder_input_data[i, t, target_word2id[word]] = 1.
         if t > 0:
             # decoder_target_data will be ahead by one timestep
             # and will not include the start character.
-            decoder_target_data[i, t - 1, target_token_index[word]] = 1.
+            decoder_target_data[i, t - 1, target_word2id[word]] = 1.
 # At this point, data is fully set in 3 ndarrays
 
 # Define an input sequence and process it.
@@ -279,7 +274,7 @@ def decode_sequence(input_seq):
     target_seq = np.zeros((1, 1, num_decoder_tokens)) # batch size=1, word count = 1, one hot vector size = num French chars.
 
     # Populate the first character of target sequence with the start character.
-    target_seq[0, 0, target_token_index['\t']] = 1.
+    target_seq[0, 0, target_word2id['\t']] = 1.
 
     # Sampling loop for a batch of sequences
     # (to simplify, here we assume a batch of size 1).
@@ -291,7 +286,7 @@ def decode_sequence(input_seq):
 
         # Sample a token (predict a char)
         sampled_token_index = np.argmax(output_tokens[0, -1, :]) # Predicted char index in French
-        sampled_word = reverse_target_word_index[sampled_token_index] # ID to predicted char
+        sampled_word = reverse_target_id2word[sampled_token_index] # ID to predicted char
         decoded_sentence += (sampled_word + ' ')
 
         # Exit condition: either hit max length
