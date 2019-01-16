@@ -324,7 +324,7 @@ def decode_sequence(input_seq):
         # Sample a token (predict a char)
         sampled_token_index = np.argmax(output_tokens[0, -1, :]) # Predicted char index in French
         sampled_word = reverse_target_word_index[sampled_token_index] # ID to predicted char
-        decoded_sentence += sampled_word
+        decoded_sentence += (sampled_word + ' ')
 
         # Exit condition: either hit max length
         # or find stop character.
