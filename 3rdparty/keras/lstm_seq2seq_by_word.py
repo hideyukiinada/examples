@@ -177,7 +177,7 @@ reverse_target_id2word = {i: w for w, i in target_word2id.items()}
 # We need a 3D data to feed to LSTM.
 # 1. Batch size
 # 2. For each training sample: sequence length, corresponding to a sentence
-# 3. For each training sample: one-hot vector, corresponding to a character
+# 3. For each training sample: one-hot vector, corresponding to a word
 encoder_input_data = np.zeros(
     (len(input_texts), max_encoder_seq_length, num_encoder_tokens),
     dtype='float32')
@@ -199,7 +199,7 @@ for i, (input_text, target_text) in enumerate(zip(input_texts, target_texts)):
         decoder_input_data[i, t, target_word2id[word]] = 1.
         if t > 0:
             # decoder_target_data will be ahead by one timestep
-            # and will not include the start character.
+            # and will not include the start word.
             decoder_target_data[i, t - 1, target_word2id[word]] = 1.
 # At this point, data is fully set in 3 ndarrays
 
@@ -208,16 +208,16 @@ for i, (input_text, target_text) in enumerate(zip(input_texts, target_texts)):
 # encoder LSTM which outputs output and two states
 # decoder LSTM
 encoder_inputs = Input(shape=(None, num_encoder_tokens))  # Note that we only pass the size of one-hot vector here.
-encoder = LSTM(latent_dim, return_state=True)
+encoder = LSTM(latent_dim, return_state=True) # Do not return sequence.  Only returns the last hidden state and cell state.
 encoder_outputs, state_h, state_c = encoder(encoder_inputs) # We discard `encoder_outputs` and only keep the states.
 encoder_states = [state_h, state_c]  # This is passed to decoder LSTM with initial_states argument
 
 # Set up the decoder, using `encoder_states` as initial state.
-decoder_inputs = Input(shape=(None, num_decoder_tokens)) # Number of unique French characters in the text
+decoder_inputs = Input(shape=(None, num_decoder_tokens)) # Number of unique French words in the text
 # We set up our decoder to return full output sequences,
 # and to return internal states as well. We don't use the
 # return states in the training model, but we will use them in inference.
-decoder_lstm = LSTM(latent_dim, return_sequences=True, return_state=True)
+decoder_lstm = LSTM(latent_dim, return_sequences=True, return_state=True) # Return hidden state output for each input.
 
 # Pass two kinds of input: 1) Decoder (French input text in one-hot vector), 2) Encoder state (two of them)
 decoder_outputs, _, _ = decoder_lstm(decoder_inputs,
@@ -254,15 +254,19 @@ model.save('/tmp/ml_examples/s2s_w.h5')
 encoder_model = Model(encoder_inputs, encoder_states) # (Input(shape=(None, num_encoder_tokens)), [state_h, state_c])
 encoder_model.save('/tmp/ml_examples/s2s_w_encoder.h5')
 
-decoder_state_input_h = Input(shape=(latent_dim,)) # hidden state
-decoder_state_input_c = Input(shape=(latent_dim,)) # cell state
+# Define decoder states
+decoder_state_input_h = Input(shape=(latent_dim,)) # hidden state, 1D array
+decoder_state_input_c = Input(shape=(latent_dim,)) # cell state, 1D array
 decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
+
 decoder_outputs, state_h, state_c = decoder_lstm(
     decoder_inputs, initial_state=decoder_states_inputs)
+# Note the difference this time is passing decoder_states instead of encoder_states.
 decoder_states = [state_h, state_c]
+
 decoder_outputs = decoder_dense(decoder_outputs)
 decoder_model = Model(
-    [decoder_inputs] + decoder_states_inputs,
+    [decoder_inputs] + decoder_states_inputs,  # Initially, encoder states are fed, then it changes to self-feeding
     [decoder_outputs] + decoder_states)
 
 decoder_model.save('/tmp/ml_examples/s2s_w_decoder.h5')
@@ -286,8 +290,8 @@ def decode_sequence(input_seq):
         output_tokens, h, c = decoder_model.predict(
             [target_seq] + states_value)
 
-        # Sample a token (predict a char)
-        sampled_token_index = np.argmax(output_tokens[0, -1, :]) # Predicted char index in French
+        # Sample a token (predict a word)
+        sampled_token_index = np.argmax(output_tokens[0, -1, :]) # Predicted word index in French
         sampled_word = reverse_target_id2word[sampled_token_index] # ID to predicted char
         decoded_sentence += (sampled_word + ' ')
 
