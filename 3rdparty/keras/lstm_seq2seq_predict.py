@@ -306,11 +306,19 @@ def decode_sequence(input_seq):
     return decoded_sentence
 
 
-for seq_index in range(100):
-    # Take one sequence (part of the training set)
-    # for trying out decoding.
-    input_seq = encoder_input_data[seq_index: seq_index + 1] # grab one sentence from input text array.
-    decoded_sentence = decode_sequence(input_seq) # translate
+print("Please enter a text. Press q to quit.")
+while True:
+    input_sentence = input("Please enter a text: ")
+    if input_sentence == 'q':
+        break
+
+    encoder_input_data = np.zeros(
+        (1, max_encoder_seq_length, num_encoder_tokens),
+        dtype='float32')
+    for t, char in enumerate(input_sentence):
+        encoder_input_data[0, t, input_token_index[char]] = 1.
+
+    decoded_sentence = decode_sequence(encoder_input_data) # translate
     print('-')
-    print('Input sentence:', input_texts[seq_index])
+    print('Input sentence:', input_sentence)
     print('Decoded sentence:', decoded_sentence)

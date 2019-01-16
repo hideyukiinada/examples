@@ -34,9 +34,12 @@ def example():
     """An example.
     """
 
-    model = gensim.models.KeyedVectors.load_word2vec_format(WORD2VEC_MODEL_PATH, binary=True)
-    result = model.most_similar(positive=['cat', 'puppy'], negative=['dog'])
-    print(result)
+    vectors = gensim.models.KeyedVectors.load_word2vec_format(WORD2VEC_MODEL_PATH, binary=True)
+    result = vectors.most_similar(positive=['cat', 'puppy'], negative=['dog'])
+    print("Answer: %s [%02f]" % (result[0][0], result[0][1]))
+
+    result = vectors.most_similar(positive=['beverage', 'hot', 'brown'])
+    print("Answer: %s [%02f]" % (result[0][0], result[0][1]))
 
 def main():
     """Defines an application's main functionality"""
