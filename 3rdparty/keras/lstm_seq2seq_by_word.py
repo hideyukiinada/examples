@@ -269,7 +269,7 @@ model.fit([encoder_input_data, decoder_input_data], decoder_target_data, # [engl
           epochs=epochs,
           validation_split=0.2)
 # Save model
-model.save('/tmp/ml_examples/s2s.h5')
+model.save('/tmp/ml_examples/s2s_w.h5')
 
 # Next: inference mode (sampling).
 # Note that this means we are missing decoder data (French data) and
@@ -283,7 +283,7 @@ model.save('/tmp/ml_examples/s2s.h5')
 
 # Define sampling models
 encoder_model = Model(encoder_inputs, encoder_states) # (Input(shape=(None, num_encoder_tokens)), [state_h, state_c])
-encoder_model.save('/tmp/ml_examples/s2s_encoder.h5')
+encoder_model.save('/tmp/ml_examples/s2s_w_encoder.h5')
 
 decoder_state_input_h = Input(shape=(latent_dim,)) # hidden state
 decoder_state_input_c = Input(shape=(latent_dim,)) # cell state
@@ -296,7 +296,7 @@ decoder_model = Model(
     [decoder_inputs] + decoder_states_inputs,
     [decoder_outputs] + decoder_states)
 
-decoder_model.save('/tmp/ml_examples/s2s_decoder.h5')
+decoder_model.save('/tmp/ml_examples/s2s_w_decoder.h5')
 
 
 def decode_sequence(input_seq):
