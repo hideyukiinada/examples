@@ -144,6 +144,10 @@ for line in lines[: min(num_samples, len(lines) - 1)]:
         if word not in target_words:
             target_words.add(word)
 
+    for word in ['\t', '\n']: # Add special words
+        if word not in target_words:
+            target_words.add(word)
+
 # Now convert the set to a sorted list
 # input_characters = sorted(list(input_characters))
 # target_characters = sorted(list(target_characters))
