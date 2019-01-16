@@ -99,16 +99,15 @@ import numpy as np
 
 batch_size = 64  # Batch size for training.
 epochs = 100  # Number of epochs to train for.
-latent_dim = 256  # Latent dimensionality of the encoding space.
+latent_dim = 256  # Latent dimensionality of the encoding space for LSTM.
 num_samples = 10000  # Number of samples to train on.
+
 # Path to the data txt file on disk.
 data_path = '../../../../../../ai/dataset/languages/fra.txt'
 
 # Vectorize the data.
 input_texts = [] # List of sentences
 target_texts = [] # List of sentences
-# input_characters = set()
-# target_characters = set()
 input_words = set()
 target_words = set()
 
@@ -120,21 +119,13 @@ with open(data_path, 'r', encoding='utf-8') as f:
 for line in lines[: min(num_samples, len(lines) - 1)]:
     input_text, target_text = line.split('\t')  # input and target are separated by a tab in the data file.
 
-    # We use "tab" as the "start sequence" character
-    # for the targets, and "\n" as "end sequence" character.
-    target_text = '\t' + target_text + '\n'
+    # We use "tab" as the "start sequence" word
+    # for the targets, and "\n" as "end sequence" word.
+    # Add space so that both tab and \n are split into a separate token.
+    target_text = '\t' + ' ' + target_text + ' ' + '\n'
 
     input_texts.append(input_text)
     target_texts.append(target_text)
-
-    # # Create set of characters for both input and target
-    # for char in input_text:
-    #     if char not in input_characters:
-    #         input_characters.add(char)
-    #
-    # for char in target_text:
-    #     if char not in target_characters:
-    #         target_characters.add(char)
 
     for word in input_text.split(): # FIXME: Split using an NLP package
         if word not in input_words:
@@ -144,32 +135,22 @@ for line in lines[: min(num_samples, len(lines) - 1)]:
         if word not in target_words:
             target_words.add(word)
 
-    for word in ['\t', '\n']: # Add special words
+    for word in ['\t', '\n']: # Add start sequence and end of sequence tokens.
         if word not in target_words:
             target_words.add(word)
 
 # Now convert the set to a sorted list
-# input_characters = sorted(list(input_characters))
-# target_characters = sorted(list(target_characters))
-
 input_words = sorted(list(input_words))
 target_words = sorted(list(target_words))
 
 # Calculate the number of characters used for both input and target
-# num_encoder_tokens = len(input_characters)
-# num_decoder_tokens = len(target_characters)
-
 num_encoder_tokens = len(input_words)
 num_decoder_tokens = len(target_words)
 
 # Determine the size of sequence.
 # Set it to the length of the longest input text.
-# max_encoder_seq_length = max([len(txt) for txt in input_texts])
-# max_decoder_seq_length = max([len(txt) for txt in target_texts])
-
 max_encoder_seq_length = max([len(txt.split()) for txt in input_texts])  # FIXME: Split using an NLP package
 max_decoder_seq_length = max([len(txt.split()) for txt in target_texts]) # FIXME: Split using an NLP package
-
 
 print('Number of samples:', len(input_texts))
 print('Number of unique input tokens:', num_encoder_tokens)
@@ -177,24 +158,11 @@ print('Number of unique output tokens:', num_decoder_tokens)
 print('Max sequence length for inputs:', max_encoder_seq_length)
 print('Max sequence length for outputs:', max_decoder_seq_length)
 
-# Define char to ID mapping
-# input_token_index['a'] should return an ID for the character.
-# input_token_index = dict(
-#     [(char, i) for i, char in enumerate(input_characters)])
-# target_token_index = dict(
-#     [(char, i) for i, char in enumerate(target_characters)])
-
+# Define word to ID mapping
 input_token_index = dict(
     [(w, i) for i, w in enumerate(input_words)])
 target_token_index = dict(
     [(w, i) for i, w in enumerate(target_words)])
-
-# Reverse-lookup token index to decode sequences back to
-# something readable.
-# reverse_input_char_index = dict(
-#     (i, char) for char, i in input_token_index.items())
-# reverse_target_char_index = dict(
-#     (i, char) for char, i in target_token_index.items())
 
 # Reverse-lookup token index to decode sequences back to
 # something readable.
