@@ -303,10 +303,10 @@ def decode_sequence(input_seq):
 
         # Update the target sequence (of length 1).
         target_seq = np.zeros((1, 1, num_decoder_tokens))
-        target_seq[0, 0, sampled_token_index] = 1.
+        target_seq[0, 0, sampled_token_index] = 1.  # Feed this word as input
 
         # Update states
-        states_value = [h, c]
+        states_value = [h, c]  # Feed states value as input
 
     return decoded_sentence
 
