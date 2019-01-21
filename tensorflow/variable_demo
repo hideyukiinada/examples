@@ -95,6 +95,16 @@ def example():
 
             print(mango)  # 'orchard_in_california/orchard_in_la/mango:0'
 
+    # Print all the nodes
+    # Reference: https://stackoverflow.com/questions/36883949/in-tensorflow-get-the-names-of-all-the-tensors-in-a-graph
+    nodes = tf.get_default_graph().get_operations()
+
+    print("Printing nodes:")
+    for node in nodes:
+        print(node.name)
+
+    print("")
+
     init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
 
     with tf.Session() as s:
@@ -109,6 +119,24 @@ def example():
         val = s.run(coconut_2)
         print("Value of coconut_2: %s" % (val))
 
+
+    print("Printing nodes #2:")
+    for node in nodes:
+        print(node.name)
+
+    print("")
+
+    tf.reset_default_graph()
+    print("Printing nodes #3:")
+    nodes = tf.get_default_graph().get_operations()
+    if nodes is not None and len(nodes) > 0:
+        for node in nodes:
+            print(node.name)
+
+        print("")
+
+    else:
+        print("No node is found on the graph.")
 
 def main():
     """Defines an application's main functionality"""
