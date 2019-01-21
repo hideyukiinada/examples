@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+"""
+An example code to demo a TensorFlow functionality.
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+import tensorflow as tf
+import numpy as np
+
+import keras
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+
+def example():
+    """An example code.
+    """
+    tf.reset_default_graph()
+
+    apple = tf.get_variable("apple", (), dtype=tf.float32,
+                            initializer=tf.constant_initializer(123))
+    print(apple)
+
+    with tf.name_scope("orchard_in_oregon") as scope:
+        print("Printing 'scope'")
+        print(scope)
+        print(type(scope))
+        scope_as_the_name_of_variable = tf.get_variable(scope, (), dtype=tf.float32,
+                                                        initializer=tf.constant_initializer(3))
+
+        print(scope_as_the_name_of_variable)
+
+        coconut = tf.Variable(3, "coconut")
+        print("Printing 'coconut'")  # 'orchard_in_oregon/Variable:0' (Note: coconut is not used in name)
+        print(coconut)
+
+        coconut_2 = tf.Variable(4, "coconut")  # Defining the node with the same name!
+        print("Printing '2nd definition of coconut'")  # 'orchard_in_oregon/Variable_1:0' (Note: coconut is not used in name)
+        print(coconut_2)
+
+        add_op = tf.add(coconut, coconut_2, "antelope")
+        print("Printing add_op")
+        print(add_op) # "orchard_in_oregon/antelope:0"
+
+        add_op2 = tf.add(coconut, coconut_2, "antelope")
+        print("Printing add_op2") # "orchard_in_oregon/antelope_1:0" (Note: _1 suffix is added)
+        print(add_op2)
+
+    with tf.variable_scope("orchard_in_california", reuse=tf.AUTO_REUSE) as scope:
+        print("Printing 'scope'")
+        print(scope)
+        print(type(scope))
+
+        orange = tf.get_variable("orange", (), dtype=tf.float32,
+                                 initializer=tf.constant_initializer(123))
+
+        print(orange)  # 'orchard_in_california/orange:0' (Note: orange is used in name)
+
+
+        orange2 = tf.get_variable("orange")  # This is possible because of reuse=tf.AUTO_REUSE flag
+
+        print(orange2)  # 'orchard_in_california/orange:0'
+
+        guava = tf.get_variable("guava", (), dtype=tf.float32,
+                                 initializer=tf.constant_initializer(2))
+
+        print(guava)
+
+        add_op = tf.add(orange, guava, "buffaloe")
+        print("Printing add_op")
+        print(add_op) # "orchard_in_california/buffaloe:0"
+
+        add_op2 = tf.add(orange, guava, "buffaloe")
+        print("Printing add_op2")
+        print(add_op2) # "orchard_in_california/buffaloe_1:0"
+
+        pear = tf.get_variable("pear", (2,), dtype=tf.float32,
+                               initializer=tf.constant_initializer([2, 3]))
+
+        pineapple = tf.get_variable("pineapple", (5,), dtype=tf.float32,
+                                    initializer=tf.constant_initializer([2, 3]))
+
+        # Nested
+        with tf.variable_scope("orchard_in_la") as scope:
+            mango = tf.get_variable("mango", (), dtype=tf.float32,
+                                    initializer=tf.constant_initializer(456))
+
+            print(mango)  # 'orchard_in_california/orchard_in_la/mango:0'
+
+    init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
+
+    with tf.Session() as s:
+        s.run(init_op)  # Actually assign initial value to variables
+
+        val = s.run(apple)
+        print("Value of apple: %f" % (val))
+
+        val = s.run(coconut)
+        print("Value of coconut: %s" % (val))
+
+        val = s.run(coconut_2)
+        print("Value of coconut_2: %s" % (val))
+
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
