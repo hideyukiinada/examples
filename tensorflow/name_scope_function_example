@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+"""
+An example code to demo the use of TensorFlow
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+import tensorflow as tf
+import numpy as np
+
+import keras
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+EPOCH_SIZE = 200
+
+
+def add_three(a, b, c):
+    """
+    Add three tensors.
+
+    Parameters
+    ----------
+    a: Tensor
+        Number
+    b: Tensor
+        Number
+    c: Tensor
+        Number
+
+    Returns
+    -------
+    sum: Tensor
+        Sum of a, b and c
+    """
+
+    with tf.name_scope('add_three') as scope:
+        ab = tf.add(a, b)
+        sum = tf.add(ab, c)
+
+        return (sum)
+
+
+def example():
+    """An example code.
+    """
+    tf.reset_default_graph()
+
+    a = tf.constant(1)
+    b = tf.constant(10)
+    c = tf.constant(100)
+
+    d = add_three(a, b, c)
+
+    nodes = tf.get_default_graph().get_operations()
+    for n in nodes:
+        print(n.name)
+
+    init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
+
+    with tf.Session() as s:
+        s.run(init_op)  # Actually assign initial value to variables
+
+        sum = s.run(d)
+        print(sum)
+
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
