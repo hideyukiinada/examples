@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+"""
+An example code to demo the use of TensorFlow
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+import tensorflow as tf
+import numpy as np
+
+import keras
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+EPOCH_SIZE = 200
+
+
+def example():
+    """An example code.
+    """
+    tf.reset_default_graph()
+
+    a = tf.Variable(np.array([[1, 2], [3, 4], [5, 6]]))
+    b = tf.Variable(np.array([[10, 20], [30, 40], [50, 60]]))
+
+    c = tf.stack([a, b])
+
+    c2 = tf.unstack(c)
+
+    init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
+
+    with tf.Session() as s:
+        s.run(init_op)  # Actually assign initial value to variables
+
+        d = s.run(c)
+        print(d)
+        """
+        [[[ 1  2]
+          [ 3  4]
+          [ 5  6]]
+
+         [[10 20]
+          [30 40]
+          [50 60]]]
+        """
+
+        print("d2")
+        d2 = s.run(c2)
+        print(d2)
+        """
+        [
+           array(
+             [
+                 [1, 2],
+                 [3, 4],
+                 [5, 6]
+             ]
+           ), 
+           array(
+             [
+                 [10, 20],
+                 [30, 40],
+                 [50, 60]
+             ]
+           )
+        ]
+        """
+
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
