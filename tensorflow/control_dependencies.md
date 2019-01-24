@@ -7,7 +7,7 @@ so I'd write some example code to demo.
 
 In case you are interested, here is [the API reference](https://www.tensorflow.org/api_docs/python/tf/control_dependencies) 
 
-## Code
+Here is my code:
 ```
  with tf.variable_scope("home_actitivies") as scope:
         cups_of_coffee = tf.get_variable("cups_of_coffee", (), dtype=tf.int32,
@@ -49,7 +49,7 @@ You can specify each variable & operator in Session.run() in a piece of code lik
         print("   Number of cups of coffee you had:%d" % (run_result))
 ```
 
-You'll get an output:
+Running the code will produce the below output:
 
 ```
 1. Number of emails you read:0
@@ -58,13 +58,13 @@ You'll get an output:
 3. Check how many emails you read:1
    Number of cups of coffee you had:0
 ```
-
-The problem of this code by design is that there is no relationship between coffee and email.
-Specifically, read_email operator is not connected to either drink_coffee operator or cups_of_coffee variable.
+As you can see, though you have read 1 email, the number of coffee has not increased and stays at 0. This is a problem caused by the fact that the code defines *no relationship between coffee and email*.
+Specifically, read_email operator is not connected to either the drink_coffee operator or the cups_of_coffee variable.
 As it's important that you are fully awake before you read email so that you don't misunderstand
-the work email content, you might want to make sure that you drink coffee before you read email.
+work email content, you might want to make sure that you drink coffee before you read email.
 
 tf.control_dependencies makes this possible ;-)
+By enclosing the read_email statement in the tf.control_dependencies([drink_coffee]) block, you can make sure that the drink_coffee operator is called before the read_email operator is called.
 
 Here is the updated code:
 ```
@@ -92,5 +92,6 @@ Output is now
 3. Check how many emails you read:1
    Number of cups of coffee you had:1
 ```
+Now, the cups of coffee also incremented.
 
 [Complete code](control_dependencies) is in this repo.
