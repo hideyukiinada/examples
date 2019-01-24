@@ -49,7 +49,7 @@ You can specify each variable & operator in Session.run() in a piece of code lik
         print("   Number of cups of coffee you had:%d" % (run_result))
 ```
 
-You'll get an output:
+Running the code will produce the below output:
 
 ```
 1. Number of emails you read:0
