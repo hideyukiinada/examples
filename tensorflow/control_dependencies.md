@@ -60,9 +60,9 @@ Running the code will produce the below output:
 ```
 
 The problem of this code by design is that *there is no relationship between coffee and email*.
-Specifically, read_email operator is not connected to either drink_coffee operator or cups_of_coffee variable.
+Specifically, read_email operator is not connected to either the drink_coffee operator or the cups_of_coffee variable.
 As it's important that you are fully awake before you read email so that you don't misunderstand
-the work email content, you might want to make sure that you drink coffee before you read email.
+work email content, you might want to make sure that you drink coffee before you read email.
 
 tf.control_dependencies makes this possible ;-)
 
