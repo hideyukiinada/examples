@@ -58,7 +58,7 @@ Running the code will produce the below output:
 3. Check how many emails you read:1
    Number of cups of coffee you had:0
 ```
-As you can see, though you have read 1 email, the number of coffee has not increased and stays at 0. This is a problem caused by the fact that the code defines *no relationship between coffee and email*.
+As you can see, though you have read 1 email, the number of cups of coffee has not increased and stays at 0. This is a problem caused by the fact that the code defines *no relationship between coffee and email*.
 Specifically, read_email operator is not connected to either the drink_coffee operator or the cups_of_coffee variable.
 As it's important that you are fully awake before you read email so that you don't misunderstand
 work email content, you might want to make sure that you drink coffee before you read email.
