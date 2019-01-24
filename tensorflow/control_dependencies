@@ -69,7 +69,6 @@ def example2():
 
         drink_coffee = tf.assign(cups_of_coffee, cups_of_coffee + 1)
 
-
     with tf.variable_scope("work_actitivies") as scope:
         number_of_emails_read = tf.get_variable("number_of_emails_read", (), dtype=tf.int32,
                                                 initializer=tf.constant_initializer(0))
@@ -98,10 +97,109 @@ def example2():
         print("   Number of cups of coffee you had:%d" % (run_result))
 
 
+def example3():
+    """An example of not using tf.control_dependencies
+    """
+
+    tf.reset_default_graph()
+
+    with tf.variable_scope("home_actitivies") as scope:
+        coffee_temperature = tf.get_variable("temperature", (), dtype=tf.int32,
+                                             initializer=tf.constant_initializer(40))  # 40 degrees
+
+        heat_up_coffee = tf.assign(coffee_temperature, 160)
+
+        cups_of_coffee = tf.get_variable("cups_of_coffee", (), dtype=tf.int32,
+                                         initializer=tf.constant_initializer(0))
+        drink_coffee = tf.assign(cups_of_coffee, cups_of_coffee + 1)
+
+    init_op = tf.global_variables_initializer()
+
+    with tf.Session() as s:
+        s.run(init_op)
+
+        run_result = s.run([cups_of_coffee, coffee_temperature])
+        print("1. Number of cups of coffee you had:%d at %d degrees" % (run_result[0], run_result[1]))
+
+        print("2. Calling s.run(drink_coffee)")
+        run_result = s.run(drink_coffee)
+
+        run_result = s.run([cups_of_coffee, coffee_temperature])
+        print("3. Number of cups of coffee you had:%d at %d degrees" % (run_result[0], run_result[1]))
+
+
+def example4():
+    """An example of using tf.control_dependencies
+    """
+    print("\nNow using tf.control_dependencies")
+    tf.reset_default_graph()
+
+    with tf.variable_scope("home_actitivies") as scope:
+        coffee_temperature = tf.get_variable("temperature", (), dtype=tf.int32,
+                                             initializer=tf.constant_initializer(40))  # 40 degrees
+
+        heat_up_coffee = tf.assign(coffee_temperature, 160)
+
+        cups_of_coffee = tf.get_variable("cups_of_coffee", (), dtype=tf.int32,
+                                         initializer=tf.constant_initializer(0))
+
+        with tf.control_dependencies([heat_up_coffee]):
+            drink_coffee = tf.assign(cups_of_coffee, cups_of_coffee + 1)
+
+    init_op = tf.global_variables_initializer()
+
+    with tf.Session() as s:
+        s.run(init_op)
+
+        run_result = s.run([cups_of_coffee, coffee_temperature])
+        print("1. Number of cups of coffee you had:%d at %d degrees" % (run_result[0], run_result[1]))
+
+        print("2. Calling s.run(drink_coffee)")
+        run_result = s.run(drink_coffee)
+
+        run_result = s.run([cups_of_coffee, coffee_temperature])
+        print("3. Number of cups of coffee you had:%d at %d degrees" % (run_result[0], run_result[1]))
+
+
+def example5():
+    """An example of using tf.control_dependencies
+    """
+    print("\nNow using tf.control_dependencies")
+    tf.reset_default_graph()
+
+    with tf.variable_scope("home_actitivies") as scope:
+        cups_of_coffee = tf.get_variable("cups_of_coffee", (), dtype=tf.int32,
+                                         initializer=tf.constant_initializer(0))
+
+        drink_coffee = tf.assign(cups_of_coffee, cups_of_coffee + 1)
+
+        with tf.control_dependencies([drink_coffee]):
+            calc_calories = tf.multiply(2,
+                                        cups_of_coffee)  # cups_of_coffee is incremented before multiply() because of drink_coffee
+
+    init_op = tf.global_variables_initializer()
+
+    with tf.Session() as s:
+        s.run(init_op)
+
+        run_result = s.run(cups_of_coffee)
+        print("1. Cups of coffee : %d" % (run_result))
+
+        run_result = s.run(calc_calories)
+        print("2. Calories : %d" % (run_result))
+
+        run_result = s.run(cups_of_coffee)
+        print("3. Cups of coffee : %d" % (run_result))
+
+
 def main():
     """Defines an application's main functionality"""
     example()
     example2()
+    example3()
+    example4()
+    example5()
+
 
 if __name__ == "__main__":
     main()
