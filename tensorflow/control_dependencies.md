@@ -7,7 +7,7 @@ so I'd write some example code to demo.
 
 In case you are interested, here is [the API reference](https://www.tensorflow.org/api_docs/python/tf/control_dependencies) 
 
-## Code
+Here is my code:
 ```
  with tf.variable_scope("home_actitivies") as scope:
         cups_of_coffee = tf.get_variable("cups_of_coffee", (), dtype=tf.int32,
