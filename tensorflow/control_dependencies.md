@@ -3,7 +3,7 @@ by Hide Inada
 
 Have you seen tf.control_dependencies used in code written with TensorFlow?
 It has a fancy name, so it may not be clear what it does but it's actually very straightforward, 
-so I'd write some example code to demo.
+so I decided to write some example code to demo.
 
 In case you are interested, here is [the API reference](https://www.tensorflow.org/api_docs/python/tf/control_dependencies) 
 
