@@ -65,6 +65,7 @@ As it's important that you are fully awake before you read email so that you don
 work email content, you might want to make sure that you drink coffee before you read email.
 
 tf.control_dependencies makes this possible ;-)
+By enclosing the read_email statement in the tf.control_dependencies([drink_coffee]) block, you can make sure that the drink_coffee operator is called before the read_email operator is called.
 
 Here is the updated code:
 ```
