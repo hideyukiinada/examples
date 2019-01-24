@@ -59,7 +59,7 @@ Running the code will produce the below output:
    Number of cups of coffee you had:0
 ```
 
-The problem of this code by design is that there is no relationship between coffee and email.
+The problem of this code by design is that *there is no relationship between coffee and email*.
 Specifically, read_email operator is not connected to either drink_coffee operator or cups_of_coffee variable.
 As it's important that you are fully awake before you read email so that you don't misunderstand
 the work email content, you might want to make sure that you drink coffee before you read email.
