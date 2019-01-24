@@ -20,7 +20,7 @@ EPOCH_SIZE = 200
 
 
 def example():
-    """An example code.
+    """An example of not using tf.control_dependencies
     """
     tf.reset_default_graph()
 
@@ -52,14 +52,56 @@ def example():
 
         run_result = s.run(number_of_emails_read)
         print("3. Check how many emails you read:%d" % (run_result))
-        
+
         run_result = s.run(cups_of_coffee)
         print("   Number of cups of coffee you had:%d" % (run_result))
+
+
+def example2():
+    """An example of using tf.control_dependencies
+    """
+    print("\nNow using tf.control_dependencies")
+    tf.reset_default_graph()
+
+    with tf.variable_scope("home_actitivies") as scope:
+        cups_of_coffee = tf.get_variable("cups_of_coffee", (), dtype=tf.int32,
+                                         initializer=tf.constant_initializer(0))
+
+        drink_coffee = tf.assign(cups_of_coffee, cups_of_coffee + 1)
+
+
+    with tf.variable_scope("work_actitivies") as scope:
+        number_of_emails_read = tf.get_variable("number_of_emails_read", (), dtype=tf.int32,
+                                                initializer=tf.constant_initializer(0))
+
+        with tf.control_dependencies([drink_coffee]):
+            read_email = tf.assign(number_of_emails_read, number_of_emails_read + 1)
+
+    init_op = tf.global_variables_initializer()
+
+    with tf.Session() as s:
+        s.run(init_op)
+
+        run_result = s.run(number_of_emails_read)
+        print("1. Number of emails you read:%d" % (run_result))
+
+        run_result = s.run(cups_of_coffee)
+        print("   Number of cups of coffee you had:%d" % (run_result))
+
+        print("2. Calling s.run(read_email)")
+        run_result = s.run(read_email)
+
+        run_result = s.run(number_of_emails_read)
+        print("3. Check how many emails you read:%d" % (run_result))
+
+        run_result = s.run(cups_of_coffee)
+        print("   Number of cups of coffee you had:%d" % (run_result))
+
 
 def main():
     """Defines an application's main functionality"""
     example()
-
+    example2()
 
 if __name__ == "__main__":
     main()
