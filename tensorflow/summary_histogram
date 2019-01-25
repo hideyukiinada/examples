@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+"""
+An example code to demo the use of TensorFlow
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+from pathlib import Path
+
+import tensorflow as tf
+import numpy as np
+
+TF_LOG_DIR = "/tmp/ml_examples/tf_log" # Type: tensorboard --logdir=/tmp/ml_examples/tf_log
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+EPOCH_SIZE = 200
+
+
+def example():
+    """An example code.
+    """
+    tf.reset_default_graph()
+
+    # Create Tensorboard log directory
+    tf_log_dir_path = Path(TF_LOG_DIR)
+    if tf_log_dir_path.exists() is False:
+        tf_log_dir_path.mkdir(parents=True, exist_ok=True)
+
+    with tf.variable_scope("fruit") as scope:
+        apricot_prices = tf.get_variable("apricot_price", (1000), dtype=tf.float32,
+                                  initializer=tf.random_normal_initializer(mean=1.0, stddev=0.2)) # $ 1 mean
+
+        tf.summary.histogram('Price', apricot_prices)
+
+        merged = tf.summary.merge_all()
+
+    init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
+
+    with tf.Session() as s:
+        tensorboard_writer = tf.summary.FileWriter(tf_log_dir_path, s.graph)
+
+        s.run(init_op)  # Actually assign initial value to variables
+
+        result, prices_value = s.run([merged, apricot_prices])
+        tensorboard_writer.add_summary(result, 0)
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
