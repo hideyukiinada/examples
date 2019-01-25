@@ -35,16 +35,21 @@ def example():
         tf_log_dir_path.mkdir(parents=True, exist_ok=True)
 
     with tf.variable_scope("fruit") as scope:
-        apricot_price = tf.get_variable("apricot", (), dtype=tf.float32,
+        apricot_price = tf.get_variable("apricot_price", (), dtype=tf.float32,
                                   initializer=tf.constant_initializer(0.50)) # $ 0.50/each
-        quantity_sold = tf.get_variable("banana", (), dtype=tf.float32,
-                                 initializer=tf.constant_initializer(0.))
+
+        with tf.name_scope("Variables_that_change_most_often"):
+            quantity_sold = tf.get_variable("qty_sold", (), dtype=tf.float32,
+                                     initializer=tf.constant_initializer(0.))
 
         sell_apricot = tf.assign(quantity_sold, quantity_sold + 1)
-        revenue = tf.multiply(apricot_price, quantity_sold)
+
+        with tf.name_scope("Financial_data"):
+            revenue = tf.multiply(apricot_price, quantity_sold)
 
         tf.summary.scalar('Price', apricot_price)
         tf.summary.scalar('Quantity sold', quantity_sold)
+        tf.summary.scalar('Revenue', revenue)
         merged = tf.summary.merge_all()
 
     init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
