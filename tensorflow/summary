@@ -35,18 +35,16 @@ def example():
         tf_log_dir_path.mkdir(parents=True, exist_ok=True)
 
     with tf.variable_scope("fruit") as scope:
-        apricot = tf.get_variable("apricot", (), dtype=tf.float32,
-                                  initializer=tf.constant_initializer(2.0))
-        banana = tf.get_variable("banana", (), dtype=tf.float32,
+        apricot_price = tf.get_variable("apricot", (), dtype=tf.float32,
+                                  initializer=tf.constant_initializer(0.50)) # $ 0.50/each
+        quantity_sold = tf.get_variable("banana", (), dtype=tf.float32,
                                  initializer=tf.constant_initializer(0.))
 
-        inc_banana = tf.assign(banana, banana + 1)
+        sell_apricot = tf.assign(quantity_sold, quantity_sold + 1)
+        revenue = tf.multiply(apricot_price, quantity_sold)
 
-        with tf.control_dependencies([inc_banana]):
-            coconut = tf.pow(apricot, banana)
-
-        tf.summary.scalar('power', banana)
-        tf.summary.scalar('two to the nth power', coconut)
+        tf.summary.scalar('Price', apricot_price)
+        tf.summary.scalar('Quantity sold', quantity_sold)
         merged = tf.summary.merge_all()
 
     init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
@@ -57,9 +55,10 @@ def example():
         s.run(init_op)  # Actually assign initial value to variables
 
         for i in range(10):
-            result, coconut_val = s.run([merged, coconut])
+            result, _, revenue_value = s.run([merged, sell_apricot, revenue])
             tensorboard_writer.add_summary(result, i)
 
+            print("[%d]: Revenue: $%.02f" % (i, revenue_value))
 
 def main():
     """Defines an application's main functionality"""
