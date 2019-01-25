@@ -3,7 +3,7 @@ by Hide Inada
 
 Have you seen tf.control_dependencies used in code written with TensorFlow?
 It has a fancy name, so it may not be clear what it does but it's actually very straightforward, 
-so I'd write some example code to demo.
+so I decided to write some example code to demo.
 
 In case you are interested, here is [the API reference](https://www.tensorflow.org/api_docs/python/tf/control_dependencies) 
 
@@ -58,8 +58,8 @@ Running the code will produce the below output:
 3. Check how many emails you read:1
    Number of cups of coffee you had:0
 ```
-As you can see, though you have read 1 email, the number of coffee has not increased and stays at 0. This is a problem caused by the fact that the code defines *no relationship between coffee and email*.
-Specifically, read_email operator is not connected to either the drink_coffee operator or the cups_of_coffee variable.
+As you can see, though you have read 1 email, the number of cups of coffee has not increased and stays at 0. This is a problem caused by the fact that the code defines *no relationship between coffee and email*.
+Specifically, the read_email operator is not connected to either the drink_coffee operator or the cups_of_coffee variable.
 As it's important that you are fully awake before you read email so that you don't misunderstand
 work email content, you might want to make sure that you drink coffee before you read email.
 
