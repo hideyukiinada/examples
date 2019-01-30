@@ -32,6 +32,7 @@ The below code can fit the curve well in -3PI to 3PI.
 
     plt.show()
 ```
+Blue line are the data points in the training set, and red crosses are the predicted points.
 ![Chart generated](https://github.com/hideyukiinada/examples/blob/master/assets/images/sine1.png)
 
 As long as the test data is close to the training data, it can do a decent prediction.
