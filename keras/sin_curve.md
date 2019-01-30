@@ -50,5 +50,9 @@ to
 Here is the result:
 ![Chart generated](https://github.com/hideyukiinada/examples/blob/master/assets/images/sine2.png)
 
+The neural network has never seen data greater than 3PI or less than -3PI, so it didn't know what to do.
+It guessed wrong!
 
+The key is that you have to make sure that training data includes data that is close to you see in production.
+So for this sine curve projection, there is no hope?  Not quite.  I have used LSTM to produce a sine curve beyond a point included the training set.  If you are interested, please reach out to me.
 
