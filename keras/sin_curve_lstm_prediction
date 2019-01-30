@@ -1,0 +1,110 @@
+#!/usr/bin/env python
+"""
+An example code to see how ML performs for a sine curve prediction.
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+
+
+import os
+import logging
+from pathlib import Path
+
+import datetime
+import numpy as np
+import sys
+
+import keras
+from keras.models import Model
+from keras.layers import Input
+from keras.layers import LSTM
+from keras.layers import Flatten
+from keras.layers import Dense
+from keras.optimizers import Adam
+
+from matplotlib import pyplot as plt
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+
+def example():
+    """An example code.
+    """
+
+    data_size = 2048
+    batch_size = 32
+    x_min = - 3 * np.pi # [-3pi, 3pi) # three cycles
+    x_max = 3 * np.pi # [-3pi, 3pi) # three cycles
+    interval = (-x_min - x_min)/data_size
+
+    x_org = np.arange(x_min, x_max, interval)
+    y_org = np.sin(x_org) + np.random.random()*0.3
+
+#    print(x)
+#    print(y)
+
+    x_list = list()
+    y_list = list()
+
+    for i in range(data_size - batch_size):
+        x_batch = np.array(x_org[i:i+batch_size])
+        y_batch = np.array([y_org[i]])
+
+        x_list.append(x_batch)
+        y_list.append(y_batch)
+
+    x = np.array(x_list)
+    y = np.array(y_list)
+
+    x = x.reshape((x.shape[0], x.shape[1], 1))
+    # x_test = (np.random.random(256) * 2.0 - 1.0)
+    # x_test *= 6 * np.pi  # [-6pi, 6pi) # three cycles
+    #
+    # y_test = np.sin(x_test)
+
+    input_layer = Input(shape=(batch_size, 1))
+    layer = LSTM(128, return_sequences=False, return_state=False)(input_layer)
+    layer = Dense(2048, activation='relu')(layer)
+    layer = Dense(128, activation='relu')(layer)
+    last_layer = Dense(1, activation='linear')(layer)
+
+    model = Model(input_layer, last_layer)
+    adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999)
+    model.compile(adam, loss=keras.losses.mean_squared_error, metrics=['accuracy'])
+    model.fit(x=x, y=y, epochs=10)
+
+    x_current_max = x_max - interval*batch_size
+    x_list = list()
+    y_list = list()
+
+
+    for i in range(1000):
+        x_test = np.linspace(x_current_max, x_current_max + interval * batch_size, batch_size)
+
+        y_test = model.predict(x_test.reshape((1, batch_size, 1)))
+
+        x_elem = x_test[batch_size-1]
+        y_elem = np.squeeze(y_test)
+        x_list.append(x_elem)
+        y_list.append(y_elem)
+
+        x_current_max += interval
+
+    plt.plot(x_org, y_org, 'bo')
+
+    plt.plot(x_list, y_list, 'rx')
+
+    plt.show()
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
