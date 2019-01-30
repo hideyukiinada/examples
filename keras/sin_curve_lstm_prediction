@@ -37,7 +37,14 @@ def example():
     """
 
     data_size = 200
-    batch_size = 50
+    #batch_size = 50 # this works
+    #batch_size = 25  # curve shrinks
+    # batch_size = 60 # good, but the height is a little missing.
+    #batch_size = 48  # good, but the bottom is too low
+    #batch_size = 55  # bottom too high, top too low.
+    #batch_size = 49 # top too low
+    batch_size = 65
+
     x_min = - 3 * np.pi # [-3pi, 3pi) # three cycles
     x_max = 3 * np.pi # [-3pi, 3pi) # three cycles
     interval = (-x_min - x_min)/data_size
@@ -85,7 +92,7 @@ def example():
     model = Model(input_layer, last_layer)
     adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999)
     model.compile(adam, loss=keras.losses.mean_squared_error, metrics=['accuracy'])
-    model.fit(x=x, y=y, epochs=10)
+    model.fit(x=x, y=y, epochs=20)
 
     x_current_max = x_max - interval*batch_size
     x_list = list()
@@ -97,7 +104,7 @@ def example():
     x_test = last_y_batch.reshape((1, batch_size, 1))
     x_list = list()
     y_list = list()
-    for i in range(300):
+    for i in range(400):
         #x_test = np.linspace(x_current_max, x_current_max + interval * batch_size, batch_size)
         #x_elem = x_test[batch_size-1]
         #x_test -= x_test[0]
