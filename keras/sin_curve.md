@@ -3,7 +3,7 @@
 One of the advantages of neural networks is ability to fit a non-linear curve.
 
 For example, I generated a sine curve that is shifted upward by np.random.random() * 0.3.
-The below code can fit the curve well in -3PI to 3PI.  
+The below code can fit the curve well in -3π to 3π.  
 ```
     x = (np.random.random(1024) * 2.0 - 1.0)  # Continuous uniform distribution [-1, 1)
     x *= 3 * np.pi  # [-3pi, 3pi) # three cycles
@@ -32,7 +32,7 @@ The below code can fit the curve well in -3PI to 3PI.
 
     plt.show()
 ```
-Blue line are the data points in the training set, and red crosses are the predicted points.
+The blue circles are the data points in the training set, and the red crosses are the predicted points.
 ![Chart generated](https://github.com/hideyukiinada/examples/blob/master/assets/images/sine1.png)
 
 As long as the test data is close to the training data, it can do a decent prediction.
@@ -51,9 +51,10 @@ to
 Here is the result:
 ![Chart generated](https://github.com/hideyukiinada/examples/blob/master/assets/images/sine2.png)
 
-The neural network has never seen data greater than 3PI or less than -3PI, so it didn't know what to do.
+The neural network has never seen data greater than 3π or less than -3π, so it didn't know what to do.
 It guessed wrong!
 
-The key is that you have to make sure that training data includes data that is close to you see in production.
+The key is that **to make sure that training data includes data that is close to what you see in production.**
+
 So for this sine curve projection, there is no hope?  Not quite.  I have used LSTM to produce a sine curve beyond a point included the training set.  If you are interested, please reach out to me.
 
