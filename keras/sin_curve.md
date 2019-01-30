@@ -32,3 +32,4 @@ For example, the below code can fit a sine curve well in -3PI to 3PI.
 
     plt.show()
 ```
+![Chart generated](https://github.com/hideyukiinada/examples/blob/master/assets/images/sine1.png)
