@@ -2,8 +2,8 @@
 
 One of the advantages of neural networks is ability to fit a non-linear curve.
 
-For example, the below code can fit a curve well in -3PI to 3PI.  This curve is a sine curve that is shifted upward by np.random.random() * 0.3.
-
+For example, I generated a sine curve that is shifted upward by np.random.random() * 0.3.
+The below code can fit the curve well in -3PI to 3PI.  
 ```
     x = (np.random.random(1024) * 2.0 - 1.0)  # Continuous uniform distribution [-1, 1)
     x *= 3 * np.pi  # [-3pi, 3pi) # three cycles
@@ -33,3 +33,22 @@ For example, the below code can fit a curve well in -3PI to 3PI.  This curve is 
     plt.show()
 ```
 ![Chart generated](https://github.com/hideyukiinada/examples/blob/master/assets/images/sine1.png)
+
+As long as the test data is close to the training data, it can do a decent prediction.
+
+## Unseen test data
+What do you think will happen if test data is something the network has not seen?
+I expanded the domain of x by changing:
+```
+    x_test *= 3 * np.pi
+```
+to
+```
+    x_test *= 6 * np.pi
+```
+
+Here is the result:
+![Chart generated](https://github.com/hideyukiinada/examples/blob/master/assets/images/sine2.png)
+
+
+
