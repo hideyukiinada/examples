@@ -2,7 +2,7 @@
 
 One of the advantages of neural networks is ability to fit a non-linear curve.
 
-For example, the below code can fit a sine curve well in -3PI to 3PI. 
+For example, the below code can fit a curve well in -3PI to 3PI.  This curve is a sine curve that is shifted upward by np.random.random() * 0.3.
 
 ```
     x = (np.random.random(1024) * 2.0 - 1.0)  # Continuous uniform distribution [-1, 1)
