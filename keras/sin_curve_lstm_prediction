@@ -21,7 +21,7 @@ import sys
 import keras
 from keras.models import Model
 from keras.layers import Input
-from keras.layers import LSTM
+from keras.layers import CuDNNLSTM as LSTM
 from keras.layers import Flatten
 from keras.layers import Dense
 from keras.optimizers import Adam
@@ -36,8 +36,8 @@ def example():
     """An example code.
     """
 
-    data_size = 2048
-    batch_size = 32
+    data_size = 200
+    batch_size = 50
     x_min = - 3 * np.pi # [-3pi, 3pi) # three cycles
     x_max = 3 * np.pi # [-3pi, 3pi) # three cycles
     interval = (-x_min - x_min)/data_size
@@ -45,30 +45,39 @@ def example():
     x_org = np.arange(x_min, x_max, interval)
     y_org = np.sin(x_org) + np.random.random()*0.3
 
-#    print(x)
-#    print(y)
-
+    last_y_batch = None
     x_list = list()
     y_list = list()
 
-    for i in range(data_size - batch_size):
-        x_batch = np.array(x_org[i:i+batch_size])
-        y_batch = np.array([y_org[i]])
+    for i in range(data_size - batch_size - 1):
+#        x_batch = np.array(x_org[i:i+batch_size])
+#        y_batch = np.array([y_org[i]])
 
+        x_batch = np.array(y_org[i:i + batch_size])
+        y_batch = np.array(y_org[i+1:i + 1+batch_size]) # off by 1
+
+        x_org_batch = x_org[i:i + batch_size]
+
+        #x_list.append(x_batch)
         x_list.append(x_batch)
         y_list.append(y_batch)
+
+    last_y_batch = y_batch
+    last_x_org_batch = x_org_batch
 
     x = np.array(x_list)
     y = np.array(y_list)
 
-    x = x.reshape((x.shape[0], x.shape[1], 1))
+    x = x.reshape((x.shape[0], batch_size, 1))
+    y = y.reshape((y.shape[0], batch_size, 1))
+
     # x_test = (np.random.random(256) * 2.0 - 1.0)
     # x_test *= 6 * np.pi  # [-6pi, 6pi) # three cycles
     #
     # y_test = np.sin(x_test)
 
     input_layer = Input(shape=(batch_size, 1))
-    layer = LSTM(128, return_sequences=False, return_state=False)(input_layer)
+    layer = LSTM(2048, return_sequences=True, return_state=False)(input_layer)
     layer = Dense(2048, activation='relu')(layer)
     layer = Dense(128, activation='relu')(layer)
     last_layer = Dense(1, activation='linear')(layer)
@@ -82,18 +91,32 @@ def example():
     x_list = list()
     y_list = list()
 
+    #last_x_org_batch
 
-    for i in range(1000):
-        x_test = np.linspace(x_current_max, x_current_max + interval * batch_size, batch_size)
+    x_elem = x_max
+    x_test = last_y_batch.reshape((1, batch_size, 1))
+    x_list = list()
+    y_list = list()
+    for i in range(300):
+        #x_test = np.linspace(x_current_max, x_current_max + interval * batch_size, batch_size)
+        #x_elem = x_test[batch_size-1]
+        #x_test -= x_test[0]
 
-        y_test = model.predict(x_test.reshape((1, batch_size, 1)))
+        y_test = model.predict(x_test)
 
-        x_elem = x_test[batch_size-1]
         y_elem = np.squeeze(y_test)
-        x_list.append(x_elem)
-        y_list.append(y_elem)
 
-        x_current_max += interval
+        y_val = y_elem[batch_size-1]
+        x_list.append(x_elem)
+        y_list.append(y_val)
+
+        x_elem += interval
+        x_test = np.squeeze(x_test)
+        x_test = x_test[1:batch_size].tolist()
+        x_test.append(y_val)
+        x_test = np.array(x_test)
+        x_test = x_test.reshape((1, batch_size, 1))
+
 
     plt.plot(x_org, y_org, 'bo')
 
