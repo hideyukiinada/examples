@@ -38,7 +38,7 @@ def example():
     y = np.sin(x) + np.random.random() * 0.3
 
     x_test = (np.random.random(256) * 2.0 - 1.0)
-    x_test *= 3 * np.pi
+    x_test *= 6 * np.pi
 
     y_test = np.sin(x_test)
 
