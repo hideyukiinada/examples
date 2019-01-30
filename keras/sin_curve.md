@@ -56,5 +56,5 @@ It guessed wrong!
 
 The key is that **to make sure that training data includes data that is close to what you see in production.**
 
-So for this sine curve projection, there is no hope?  Not quite.  I have used LSTM to produce a sine curve beyond a point included the training set.  If you are interested, please reach out to me.
+So for this sine curve projection, there is no hope?  Not so fast ;-)  I have used LSTM to produce a sine curve beyond a point included the training set.  If you are interested, please reach out to me.
 
