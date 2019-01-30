@@ -8,8 +8,6 @@ __license__ = "The MIT License"
 __email__ = "hideyuki@gmail.com"
 """
 
-
-
 import os
 import logging
 from pathlib import Path
@@ -21,24 +19,23 @@ import sys
 import keras
 from keras.models import Model
 from keras.layers import Input
-from keras.layers import Flatten
 from keras.layers import Dense
 from keras.optimizers import Adam
 
 from matplotlib import pyplot as plt
 
 log = logging.getLogger(__name__)
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 
 def example():
     """An example code.
     """
 
-    x = (np.random.random(2048) * 2.0 - 1.0)  # Continuous uniform distribution [-1, 1)
-    x *= 3 * np.pi # [-3pi, 3pi) # three cycles
+    x = (np.random.random(1024) * 2.0 - 1.0)  # Continuous uniform distribution [-1, 1)
+    x *= 3 * np.pi  # [-3pi, 3pi) # three cycles
 
-    y = np.sin(x) + np.random.random()*0.3
+    y = np.sin(x) + np.random.random() * 0.3
 
     x_test = (np.random.random(256) * 2.0 - 1.0)
     x_test *= 6 * np.pi  # [-6pi, 6pi) # three cycles
@@ -52,7 +49,7 @@ def example():
 
     model = Model(input_layer, last_layer)
     adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999)
-    model.compile(adam, loss=keras.losses.mean_squared_error, metrics=['accuracy'])
+    model.compile(adam, loss=keras.losses.mean_squared_error)
     model.fit(x=x, y=y, epochs=100, validation_data=(x_test, y_test))
 
     plt.plot(x, y, 'bo')
@@ -61,6 +58,7 @@ def example():
     plt.plot(x_test, y_test, 'rx')
 
     plt.show()
+
 
 def main():
     """Defines an application's main functionality"""
