@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Restart a subprocess if it dies.
+
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+import subprocess
+import time
+
+def main():
+    while True:
+        subprocess.call(["python", "always_up_subproc"])
+
+
+if __name__ == "__main__":
+    main()
