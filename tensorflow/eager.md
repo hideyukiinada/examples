@@ -33,7 +33,7 @@ I understood that this is because TensorFlow adopted an architecture to build a 
 However, this makes it very difficult to verify API's functionality in Python console.
 On my Mac Terminal, Python console is always open so that I can do a quick calculation or test an API.
 
-Later on (when???), TensorFlow introduced a call that addresses this issue.
+Later on in October 2017, [TensorFlow introduced a feature that addresses this issue](https://ai.googleblog.com/2017/10/eager-execution-imperative-define-by.html).
 It's called [Eager Execution](https://www.tensorflow.org/api_docs/python/tf/enable_eager_execution).
 
 With eager execution, the previous code can be written as:
