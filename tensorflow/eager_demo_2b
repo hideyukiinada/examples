@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+"""
+An example code to demo the use of TensorFlow
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+import tensorflow as tf
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+
+def main():
+    """Defines an application's main functionality"""
+    tf.enable_eager_execution()
+
+    a = tf.Variable(1, "a")
+    b = tf.Variable(2, "b")
+    c = tf.add(a, b)
+    print("Value of c: %d" % (c))
+
+if __name__ == "__main__":
+    main()
