@@ -11,7 +11,7 @@ When you use TensorFlow, you build a computational graph first, then call run() 
 
 There are 4 samples in this dataset.
 Each sample is a 3-dimensional vector.
-This data is fed to the run() method in feed_dict as the value for a placeholder. 
+This data is first defined as an ndarray, then fed to the tfSession.run() method in feed_dict as the value for a placeholder. 
  
 ```
      a = np.array([[0.8, 1, 100], [0, 1000, 5], [0.1, 2, 2000], [0, 2000, 4]])
@@ -19,11 +19,16 @@ This data is fed to the run() method in feed_dict as the value for a placeholder
 
 The objective is the following:
 
-Calculate the sum of 2nd elements of each sample if the first element is greater than 0
-Calculate the sum of 3nd elements of each sample if the first element is 0
+* Calculate the sum of 2nd elements of each sample if the first element is greater than 0
+* Calculate the sum of 3nd elements of each sample if the first element is 0
+
+<img src="../assets/images/conditional_2.jpg"  width="600px">>
+
+In this example, the first sample has 0.8 in the first element, therefore, keep the 2nd element and ignore the third element.
+For the second element, the first element is 0, so ignore the second element and keep the third element.
+Applying the same logic to the third and fourth elements.
 
 As far as I know, you cannot use tf.cond method as it requires the condition to be a scalar number.
 
-<img src="../assets/images/conditional_2.jpg"  width="600px">>
 
 
