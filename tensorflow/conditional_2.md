@@ -43,7 +43,7 @@ Here are the steps that I took to solve this problem.
     x_third_cell = x[:, 2]  # [100., 5., 2000., 4.]
 ```
 
-### Adjust the first tensor to be 1 if the value is above 0 by using the ceil() method
+### Adjust the value of first tensor to be 1 if the value is above 0 by using the ceil() method
 ```
     x_first_cell_ceil = tf.ceil(x_first_cell)  # [1., 0., 1., 0.]
 
