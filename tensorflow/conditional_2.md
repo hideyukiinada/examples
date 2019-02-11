@@ -9,10 +9,13 @@ When you use TensorFlow, you build a computational graph first, then call the ru
 
 There are 4 samples in this dataset.
 Each sample is a 3-dimensional vector.
-This data is first defined as an ndarray, then fed to the tfSession.run() method in feed_dict as the value for a placeholder. 
- 
+This data is first defined as an ndarray. 
 ```
      a = np.array([[0.8, 1, 100], [0, 1000, 5], [0.1, 2, 2000], [0, 2000, 4]])
+```
+This data is fed to the tfSession.run() method in feed_dict as the values for a placeholder below.
+```
+    x = tf.placeholder(tf.float32, shape=(None, 3), name="x")
 ```
 
 The objective is the following:
