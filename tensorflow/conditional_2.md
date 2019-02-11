@@ -7,7 +7,7 @@ When you use TensorFlow, you build a computational graph first, then call run() 
  
  Let's take a look at the below example:
 
-<img src="assets/images/conditional_1.jpg">
+<img src="../assets/images/conditional_1.jpg">
 
 
 This data is fed to the run() method in feed_dict as the value for a placeholder. 
