@@ -1,9 +1,9 @@
 # Applying operations conditionally based on a value in each sample in TensorFlow
 
-When you use TensorFlow, you build a computational graph first, then call run() within a session
+When you use TensorFlow, you build a computational graph first, then call the run method of a tfSession instance
  to do the actual calculation unless you use it in the eager execution mode.
  
- This makes it coming up with code challenging to do what would be a simple task in Python.
+ This makes it challenging to do what would be a simple task in Python.
  
  Let's take a look at the below example:
 
