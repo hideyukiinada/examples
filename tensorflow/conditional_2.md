@@ -23,6 +23,6 @@ Calculate the sum of 3nd elements of each sample if the first element is 0
 
 As far as I know, you cannot use tf.cond method as it requires the condition to be a scalar number.
 
-<img src="../assets/images/conditional_2.jpg"  width="400px">>
+<img src="../assets/images/conditional_2.jpg"  width="600px">>
 
 
