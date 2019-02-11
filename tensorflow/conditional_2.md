@@ -78,7 +78,7 @@ I hope this will help you if you run into a similar situation.  I'd also love to
 
 
 # Complete code
-If you want to run this, [complete code](https://github.com/hideyukiinada/examples/blob/master/tensorflow/conditional_2) is in my github repo.
+If you want to run this, the [complete code](https://github.com/hideyukiinada/examples/blob/master/tensorflow/conditional_2) is in my github repo.
 
 Here is the code of a function that does this:
 ```
