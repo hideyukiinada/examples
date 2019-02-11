@@ -56,19 +56,22 @@ Here are the steps that I took to solve this problem.
 
 ## Second objective
 Second objective is slightly more cumbersome as you first negate the value of the first tensor.
+
 ### Negate first tensor
 ```
     x_first_cell_ceil_bool = tf.cast(x_first_cell_ceil, tf.bool)  # [True, False, True, False]
     x_first_cell_ceil_bool_negated_bool = tf.logical_not(x_first_cell_ceil_bool)  # [False, True, False, True]
     x_first_cell_ceil_negated = tf.cast(x_first_cell_ceil_bool_negated_bool, tf.float32)  # [0., 1., 0., 1.]
 ```
+
 ### # Multiply the third cell
 ```
     x_filtered_third_cell = tf.multiply(x_first_cell_ceil_negated, x_third_cell)  # [0., 5., 0., 4.]
     x_negative_sum = tf.reduce_sum(x_filtered_third_cell)  # 9.0
 ```
 
-### Complete code
+# Complete code
+Here is the complete code of a function that does this:
 ```
 def example():
     """An example code.
