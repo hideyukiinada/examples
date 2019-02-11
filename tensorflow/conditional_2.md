@@ -9,7 +9,8 @@ When you use TensorFlow, you build a computational graph first, then call run() 
 
 <img src="../assets/images/conditional_1.jpg" width="400px">
 
-
+There are 4 samples in this dataset.
+Each sample is a 3-dimensional vector.
 This data is fed to the run() method in feed_dict as the value for a placeholder. 
  
 ```
