@@ -20,8 +20,8 @@ This data is fed to the tfSession.run() method in feed_dict as the values for a 
 
 Objectives are the following:
 
-* Calculate the sum of 2nd elements of each sample if the first element is greater than 0
-* Calculate the sum of 3nd elements of each sample if the first element is 0
+* Calculate the sum of second element of each sample if the first element is greater than 0
+* Calculate the sum of third element of each sample if the first element is 0
 
 <img src="../assets/images/conditional_2.jpg"  width="600px">>
 
