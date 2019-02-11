@@ -55,8 +55,7 @@ You get the same result:
 Value of c: 3
 ```
 
-This is short enough that you can type in.  For the sake of simplicity, I changed tf.get_variable() to tf.Variable()
-and typed in Python console to get below:
+The whole code is now short enough that you can type into Python console.  For the sake of simplicity, I changed tf.get_variable() to tf.Variable() and typed in Python console to get below:
 
 ```
 >>> import tensorflow as tf
