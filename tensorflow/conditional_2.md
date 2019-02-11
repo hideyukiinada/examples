@@ -26,8 +26,8 @@ Objectives are the following:
 <img src="../assets/images/conditional_2.jpg"  width="600px">>
 
 In this example, the first sample has 0.8 in the first element, therefore, keep the 2nd element and ignore the third element.
-For the second element, the first element is 0, so ignore the second element and keep the third element.
-Applying the same logic to the third and fourth elements, then you will get 3 for the first objective and 9 for the second objective.
+For the second sample, the first element is 0, so ignore the second element and keep the third element.
+Applying the same logic to the third and fourth samples, then you will get 3 for the first objective and 9 for the second objective.
 
 As far as I know, you cannot use tf.cond method as it requires the condition to be a scalar number, so I had to use a different approach which I wanted to share with you.  You cannot inspect each sample at run-time to make this include or ignore decision either.
 
