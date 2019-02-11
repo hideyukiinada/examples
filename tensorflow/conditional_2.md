@@ -56,7 +56,7 @@ Here are the steps that I took to solve this problem.
 ```
 
 ## Second objective
-Second objective is slightly more cumbersome as you first negate the value of the first tensor.
+Second objective is slightly more cumbersome as you first negate the value of the first tensor, which requires two type conversions between bool and float.
 
 ### Negate first tensor
 ```
@@ -65,14 +65,19 @@ Second objective is slightly more cumbersome as you first negate the value of th
     x_first_cell_ceil_negated = tf.cast(x_first_cell_ceil_bool_negated_bool, tf.float32)  # [0., 1., 0., 1.]
 ```
 
-### # Multiply the third cell
+### Multiply the third cell
 ```
     x_filtered_third_cell = tf.multiply(x_first_cell_ceil_negated, x_third_cell)  # [0., 5., 0., 4.]
     x_negative_sum = tf.reduce_sum(x_filtered_third_cell)  # 9.0
 ```
 
+I hope this will help you if you run into a similar situation.  I'd also love to hear from you if you know of a better approach.
+
+
 # Complete code
-Here is the complete code of a function that does this:
+If you want to run this, [complete code](https://github.com/hideyukiinada/examples/blob/master/tensorflow/conditional_2) is in my github repo.
+
+Here is the code of a function that does this:
 ```
 def example():
     """An example code.
