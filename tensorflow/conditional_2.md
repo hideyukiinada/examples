@@ -3,9 +3,7 @@
 When you use TensorFlow, you build a computational graph first, then call the run method of a tfSession instance
  to do the actual calculation unless you use it in the eager execution mode.
  
- This makes it challenging to do what would be a simple task in Python.
- 
- Let's take a look at the below example:
+ This makes it challenging to do what would be a simple task in Python.  I recently faced a problem where I need to calculate values based on specific elements within a sample being used as a flag.  The actual problem I have been working on is more complex, but here is a simplified example:
 
 <img src="../assets/images/conditional_1.jpg" width="400px">
 
@@ -28,7 +26,7 @@ In this example, the first sample has 0.8 in the first element, therefore, keep 
 For the second element, the first element is 0, so ignore the second element and keep the third element.
 Applying the same logic to the third and fourth elements, then you will get 3 for the first objective and 9 for the second objective.
 
-As far as I know, you cannot use tf.cond method as it requires the condition to be a scalar number.
+As far as I know, you cannot use tf.cond method as it requires the condition to be a scalar number, so I had to use a different approach which I wanted to share with you.
 
 Here are the steps that I took to solve this problem.
 
