@@ -7,6 +7,9 @@ When you use TensorFlow, you build a computational graph first, then call run() 
  
  Let's take a look at the below example:
 
+<img src="assets/images/conditional_1.jpg">
+
+
 This data is fed to the run() method in feed_dict as the value for a placeholder. 
  
 ```
@@ -19,5 +22,7 @@ Calculate the sum of 2nd elements of each sample if the first element is greater
 Calculate the sum of 3nd elements of each sample if the first element is 0
 
 As far as I know, you cannot use tf.cond method as it requires the condition to be a scalar number.
+
+<img src="assets/images/conditional_2.jpg">
 
 
