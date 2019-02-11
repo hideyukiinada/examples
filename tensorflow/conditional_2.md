@@ -18,7 +18,7 @@ This data is fed to the tfSession.run() method in feed_dict as the values for a 
     x = tf.placeholder(tf.float32, shape=(None, 3), name="x")
 ```
 
-The objective is the following:
+Objectives are the following:
 
 * Calculate the sum of 2nd elements of each sample if the first element is greater than 0
 * Calculate the sum of 3nd elements of each sample if the first element is 0
