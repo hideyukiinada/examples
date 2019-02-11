@@ -2,9 +2,13 @@
 """
 An example code to demo the use of TensorFlow
 
+Note that condition has to be a scalar number per [2]
+
+
 References
 ----------
-https://stackoverflow.com/questions/47840228/tensorflow-error-shape-must-be-rank-0-but-is-rank-1-for-cond-1-switch
+[1] https://stackoverflow.com/questions/47840228/tensorflow-error-shape-must-be-rank-0-but-is-rank-1-for-cond-1-switch
+[2] https://www.tensorflow.org/api_docs/python/tf/cond
 
 __author__ = "Hide Inada"
 __copyright__ = "Copyright 2018, Hide Inada"
