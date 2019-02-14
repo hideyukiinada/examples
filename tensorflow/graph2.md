@@ -1,4 +1,10 @@
+In TensorFlow, you will build a computational graph with variables and operations first, then let TensorFlow do the actual calculation within a session.
 
+In this article, I will discuss how each variable and operations are actually turned into a node on a graph.
+
+In the below code, the main logic is:
+* Declare one variable with the initial value 123
+* Increment the variable by 27
 
 ```
 def example():
