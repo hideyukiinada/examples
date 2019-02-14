@@ -1,3 +1,25 @@
+
+
+```
+def example():
+    """An example code.
+    """
+
+    graph_dir = Path(GRAPH_DIR)
+    if graph_dir.exists() is False:
+        graph_dir.mkdir(parents=True, exist_ok=True)
+
+    with tf.variable_scope("jungle") as scope:
+        lion_ref = tf.get_variable("lion", [], dtype=tf.float32, initializer=tf.constant_initializer(123))
+        assign_lion = tf.assign(lion_ref, lion_ref + 27)
+
+    default_graph = tf.get_default_graph()
+    graph_def = default_graph.as_graph_def()
+
+    tf.io.write_graph(graph_def, GRAPH_DIR, "animals.pbtxt")
+```
+
+```
 node {
   name: "jungle/lion/Initializer/Const"
   op: "Const"
@@ -183,3 +205,5 @@ node {
 versions {
   producer: 27
 }
+```
+
