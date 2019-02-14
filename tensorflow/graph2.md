@@ -227,6 +227,5 @@ Here are the list of node with its name:
 * jungle/lion/read
 * jungle/add/y
 * jungle/add
+* jungle/Assign
 
-
-  jungle/Assign
