@@ -218,3 +218,15 @@ versions {
 }
 ```
 
+There is a lot of information, so let's see the list of nodes.
+Here are the list of node with its name:
+
+* jungle/lion/Initializer/Const
+* jungle/lion
+* jungle/lion/Assign
+* jungle/lion/read
+* jungle/add/y
+* jungle/add
+
+
+  jungle/Assign
