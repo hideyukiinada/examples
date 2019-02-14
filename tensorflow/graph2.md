@@ -244,3 +244,24 @@ For example, if we had declared the variable scope as:
 
 All the names would have been prefixed with "forest".
 
+Now let's look at the nodes below:
+* jungle/lion/Initializer/Const
+* jungle/lion
+
+You can tell that the below line resulted in a initializer constant node and a variable node:
+```
+        lion_ref = tf.get_variable("lion", [], dtype=tf.float32, initializer=tf.constant_initializer(123))
+```
+
+Next one is a little more complex:
+* jungle/lion/Assign
+* jungle/lion/read
+* jungle/add/y
+* jungle/add
+* jungle/Assign
+
+Obviously, this is coming from this line:
+```
+        assign_lion = tf.assign(lion_ref, lion_ref + 27)
+```
+
