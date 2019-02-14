@@ -229,3 +229,18 @@ Here are the list of node with its name:
 * jungle/add
 * jungle/Assign
 
+As you can see, all the names are prefixed with the word "jungle".
+This is because of the following line:
+
+```
+    with tf.variable_scope("jungle") as scope:
+```
+
+For example, if we had declared the variable scope as:
+
+```
+    with tf.variable_scope("forest") as scope:
+```
+
+All the names would have been prefixed with "forest".
+
