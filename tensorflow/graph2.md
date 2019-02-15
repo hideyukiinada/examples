@@ -32,11 +32,11 @@ def example():
     tf.io.write_graph(graph_def, GRAPH_DIR, "animals.pbtxt")
 ```
 
-A graph is stored in the Graph object, so you need to convert to a GraphDef object to write to the file system.  Once you convert, you can call tf.io.write_graph to create a text file.
+A graph is stored in the Graph object, so you need to convert to a GraphDef object to write to the file system.  Once you convert, you can call tf.io.write_graph to save nodes of the graph in a text file.
 You may have noticed that pbtxt extension of the file, and a GraphDef object is using protobuf serialization to store graph data.
 
-If you run the above code, you will see the animals.pbtxt generated.  The content of the file is rather long, so let's see the list of nodes.
-Here are the list of node with its name:
+If you run the above code, you will see the animals.pbtxt generated.  The content of the file is rather long, so let's focus on the list of nodes in the file.
+Here is the list of node names:
 
 * jungle/lion/Initializer/Const
 * jungle/lion
