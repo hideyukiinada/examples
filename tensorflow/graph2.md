@@ -2,7 +2,7 @@ In TensorFlow, you will build a computational graph with variables and operation
 
 In this article, I will discuss how each variable and operations are actually turned into a node on a graph.
 
-In the below code, the main logic is:
+I wrote a short script to go over a few very simple operations.  In the below code, the main logic is:
 * Declare one variable with the initial value 123
 * Increment the variable by 27
 
@@ -144,6 +144,10 @@ node {
   input: "jungle/lion"
   input: "jungle/add"
 ```
+
+Hopefully, this article gave you some ideas about how each variable and operations in the source code get turned into actual nodes on a graph.
+
+TensorFlow's website also has a good article [A Tool Developer's Guide to TensorFlow Model Files] (https://www.tensorflow.org/guide/extend/model_files) to cover the high-level concepts in this area, and I recommend it.
 
 <hr>
 
