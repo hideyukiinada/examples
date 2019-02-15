@@ -1,6 +1,10 @@
+## Overview
+
 In TensorFlow, you will build a computational graph with variables and operations first, then let TensorFlow do the actual calculation within a session.
 
 In this article, I will discuss how variables and operations are actually turned into nodes on a graph.
+
+## Code Example
 
 Below is a short code snippet that has a few very simple operations.  The main logic is:
 * Declare one variable with the initial value 123
@@ -54,6 +58,7 @@ For example, if we had declared the variable scope as:
 
 All the names would have been prefixed with "forest".
 
+### First group of nodes
 Now let's look at the nodes below:
 * jungle/lion/Initializer/Const
 * jungle/lion
@@ -73,6 +78,7 @@ Based on this, you can tell that the below line resulted in a initializer consta
         lion_ref = tf.get_variable("lion", [], dtype=tf.float32, initializer=tf.constant_initializer(123))
 ```
 
+### Second group of nodes
 Next one is a little more complex:
 
 * jungle/lion/read
@@ -145,6 +151,7 @@ node {
   input: "jungle/add"
 ```
 
+## Final words
 Hopefully, this article gave you some ideas about how each variable and operations in the source code get turned into actual nodes on a graph.
 
 TensorFlow's website also has a good article [A Tool Developer's Guide to TensorFlow Model Files] (https://www.tensorflow.org/guide/extend/model_files) to cover the high-level concepts in this area, and I recommend it.
