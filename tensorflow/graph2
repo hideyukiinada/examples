@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """
-An example code to demo the use of checkpoint.
-This increments the value of a by 10 each time you run the script.
+An example code to demo the use of TensorFlow.
 
 __author__ = "Hide Inada"
 __copyright__ = "Copyright 2018, Hide Inada"
