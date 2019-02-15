@@ -76,7 +76,7 @@ node {
   input: "jungle/lion/Initializer/Const"
 ```
 
-Based on this, you can tell that the below line resulted in a initializer constant node and a variable node:
+Based on this, you can tell that the below line resulted in a initializer constant node (jungle/lion/Initializer/Const) and a variable node (jungle/lion):
 ```
         lion_ref = tf.get_variable("lion", [], dtype=tf.float32, initializer=tf.constant_initializer(123))
 ```
