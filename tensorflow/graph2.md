@@ -247,14 +247,24 @@ All the names would have been prefixed with "forest".
 Now let's look at the nodes below:
 * jungle/lion/Initializer/Const
 * jungle/lion
+* jungle/lion/Assign
 
-You can tell that the below line resulted in a initializer constant node and a variable node:
+jungle/lion/Assign has input keys:
+```
+node {
+  name: "jungle/lion/Assign"
+  op: "Assign"
+  input: "jungle/lion"
+  input: "jungle/lion/Initializer/Const"
+```
+
+Based on this, you can tell that the below line resulted in a initializer constant node and a variable node:
 ```
         lion_ref = tf.get_variable("lion", [], dtype=tf.float32, initializer=tf.constant_initializer(123))
 ```
 
 Next one is a little more complex:
-* jungle/lion/Assign
+
 * jungle/lion/read
 * jungle/add/y
 * jungle/add
@@ -265,3 +275,53 @@ Obviously, this is coming from this line:
         assign_lion = tf.assign(lion_ref, lion_ref + 27)
 ```
 
+Let's do one by one.
+Logical operation is:
+
+1) Create a constant node
+2) Read the value of the lion variable node
+3) Add these two nodes
+4) Assign the sum to the lion variable node
+
+Let's have a look at the "jungle/add" node:
+```
+node {
+  name: "jungle/add"
+  op: "Add"
+  input: "jungle/lion/read"
+  input: "jungle/add/y"
+```
+This corresponds to 3, and 
+
+```
+node {
+  name: "jungle/lion/read"
+  op: "Identity"
+  input: "jungle/lion"
+```
+will tell that "jungle/lion/read" is 1).
+
+As for "jungle/add/y", it corresponds to 27.
+```
+node {
+  name: "jungle/add/y"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+        }
+        float_val: 27.0
+      }
+    }
+  }
+}
+```
