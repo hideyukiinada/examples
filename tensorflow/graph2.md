@@ -1,3 +1,6 @@
+# How Variables and Operations are turned into Nodes on a Graph
+by Hide Inada
+
 ## Overview
 
 In TensorFlow, you will build a computational graph with variables and operations first, then let TensorFlow do the actual calculation within a session.
