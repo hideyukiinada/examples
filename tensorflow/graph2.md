@@ -325,3 +325,12 @@ node {
   }
 }
 ```
+
+Lastly the "jungle/Assign" node was created to "Assign the sum to the lion variable node":
+```
+node {
+  name: "jungle/Assign"
+  op: "Assign"
+  input: "jungle/lion"
+  input: "jungle/add"
+```
