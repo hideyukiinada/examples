@@ -110,7 +110,9 @@ node {
   input: "jungle/lion/read"
   input: "jungle/add/y"
 ```
-This corresponds to the third item "Add these two nodes", and 
+This corresponds to the third item "Add these two nodes".
+
+If you have a look at the "jungle/lion/read" node, you will see the it is just passing the value of the original lion variable node:
 
 ```
 node {
