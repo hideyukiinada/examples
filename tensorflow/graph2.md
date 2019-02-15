@@ -7,6 +7,8 @@ In TensorFlow, you will build [a computational graph](https://www.tensorflow.org
 
 In this article, I will discuss how variables and operations are actually turned into nodes on a graph.
 
+<img src="../assets/images/graph.png" width="400px">
+
 ## Code Example
 
 Below is a short code snippet that has a few very simple operations.  The main logic is:
