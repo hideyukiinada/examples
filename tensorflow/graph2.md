@@ -3,7 +3,7 @@ by Hide Inada
 
 ## Overview
 
-In TensorFlow, you will build a computational graph with variables and operations first, then let TensorFlow do the actual calculation within a session.
+In TensorFlow, you will build [a computational graph](https://www.tensorflow.org/api_docs/python/tf/Graph) with variables and operations first, then let TensorFlow do the actual calculation within a session.
 
 In this article, I will discuss how variables and operations are actually turned into nodes on a graph.
 
@@ -157,7 +157,7 @@ node {
 ## Final words
 Hopefully, this article gave you some ideas about how each variable and operations in the source code get turned into actual nodes on a graph.
 
-TensorFlow's website also has a good article [A Tool Developer's Guide to TensorFlow Model Files] (https://www.tensorflow.org/guide/extend/model_files) to cover the high-level concepts in this area, and I recommend it.
+TensorFlow's website also has a good article [A Tool Developer's Guide to TensorFlow Model Files](https://www.tensorflow.org/guide/extend/model_files) to cover the high-level concepts in this area, and I recommend checking it out if you are interested.
 
 <hr>
 
