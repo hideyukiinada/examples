@@ -147,7 +147,7 @@ node {
 }
 ```
 
-Now, the remaining item is the fourth item "Assign the sum to the lion variable node", which "jungle/Assign" node was created for:
+Now, the remaining item is the fourth item "Assign the sum to the lion variable node", for which "jungle/Assign" node was created:
 ```
 node {
   name: "jungle/Assign"
@@ -159,7 +159,7 @@ node {
 ## Final words
 Hopefully, this article gave you some ideas about how each variable and operations in the source code get turned into actual nodes on a graph.
 
-TensorFlow's website also has a good article [A Tool Developer's Guide to TensorFlow Model Files](https://www.tensorflow.org/guide/extend/model_files) to cover the high-level concepts in this area, and I recommend checking it out if you are interested.
+TensorFlow's website also has a good article [A Tool Developer's Guide to TensorFlow Model Files](https://www.tensorflow.org/guide/extend/model_files) to cover high-level concepts in this area, and I recommend checking it out if you are interested.
 
 <hr>
 
