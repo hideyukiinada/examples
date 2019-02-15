@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+"""
+An example code to demo the use of checkpoint.
+This increments the value of a by 10 each time you run the script.
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+from pathlib import Path
+
+import tensorflow as tf
+
+GRAPH_DIR = "/tmp/ml_examples/tf/graph2b/def"
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+
+def example():
+    """An example code.
+    """
+
+    graph_dir = Path(GRAPH_DIR)
+    if graph_dir.exists() is False:
+        graph_dir.mkdir(parents=True, exist_ok=True)
+
+    with tf.variable_scope("jungle") as scope:
+        lion_ref = tf.get_variable("lion", [], dtype=tf.float32, initializer=tf.constant_initializer(123))
+        assign_lion = tf.assign(lion_ref, lion_ref + 27)
+
+    default_graph = tf.get_default_graph()
+    graph_def = default_graph.as_graph_def()
+
+    tf.io.write_graph(graph_def, GRAPH_DIR, "animals.pbtxt")
+
+    # Get the list of nodes
+    print("List of operations")
+    operations = default_graph.get_operations()
+    for op in operations:
+        print("\nOperation:  Type: %s. Value: %s" % (str(type(op)), str(op)))
+
+        for inp in op.inputs:
+            print("*** Input start")
+            print("    " + str(inp))
+            print("*** Input end")
+
+        for outp in op.outputs:
+            print("*** Output start")
+            print("    " + str(outp))
+            print("*** Output end")
+
+
+    print("List of collections")
+    collections = default_graph.collections
+    for c in collections:
+        print(str(c))
+
+    print("\nElements in each collection")
+    for collection in collections:
+        print("\nCollection: " + str(collection))
+        elem_list = default_graph.get_collection(collection)
+        for e in elem_list:
+            print(str(e))
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
