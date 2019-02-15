@@ -1,4 +1,4 @@
-# How Variables and Operations are turned into Nodes on a Graph
+# How Variables and Operations are turned into Nodes on a Graph in TensorFlow
 by Hide Inada
 
 ## Overview
