@@ -28,9 +28,7 @@ def example():
 A graph is stored in the Graph object, so you need to convert to a GraphDef object to write to the file system.  Once you convert, you can call tf.io.write_graph to create a text file.
 You may have noticed that pbtxt extension of the file, and a GraphDef object is using protobuf serialization to store graph data.
 
-
-
-There is a lot of information, so let's see the list of nodes.
+If you run the above code, you will see the animals.pbtxt generated.  The content of the file is rather long, so let's see the list of nodes.
 Here are the list of node with its name:
 
 * jungle/lion/Initializer/Const
@@ -82,13 +80,13 @@ Next one is a little more complex:
 * jungle/add
 * jungle/Assign
 
-Obviously, this is coming from this line:
+Obviously, all of these are coming from this line:
 ```
         assign_lion = tf.assign(lion_ref, lion_ref + 27)
 ```
 
 Let's do one by one.
-Logical operation is:
+Logical operations that are happening on this line are:
 
 1) Create a constant node
 2) Read the value of the lion variable node
@@ -103,7 +101,7 @@ node {
   input: "jungle/lion/read"
   input: "jungle/add/y"
 ```
-This corresponds to 3, and 
+This corresponds to the third item "Add these two nodes", and 
 
 ```
 node {
@@ -111,9 +109,9 @@ node {
   op: "Identity"
   input: "jungle/lion"
 ```
-will tell that "jungle/lion/read" is 1).
+will tell that "jungle/lion/read" maps to second item "Read the value of the lion variable node".
 
-As for "jungle/add/y", it corresponds to 27.
+As for "jungle/add/y", the value is set to 27 so it is for the first item "Create a constant node".
 ```
 node {
   name: "jungle/add/y"
@@ -138,7 +136,7 @@ node {
 }
 ```
 
-Lastly the "jungle/Assign" node was created to "Assign the sum to the lion variable node":
+Now, the remaining item is the fourth item "Assign the sum to the lion variable node", which "jungle/Assign" node was created for:
 ```
 node {
   name: "jungle/Assign"
@@ -147,6 +145,7 @@ node {
   input: "jungle/add"
 ```
 
+<hr>
 
 # Generated pbtxt file
 ```
