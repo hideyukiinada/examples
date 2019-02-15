@@ -1,8 +1,8 @@
 In TensorFlow, you will build a computational graph with variables and operations first, then let TensorFlow do the actual calculation within a session.
 
-In this article, I will discuss how each variable and operations are actually turned into a node on a graph.
+In this article, I will discuss how variables and operations are actually turned into nodes on a graph.
 
-I wrote a short script to go over a few very simple operations.  In the below code, the main logic is:
+Below is a short code snippet that has a few very simple operations.  The main logic is:
 * Declare one variable with the initial value 123
 * Increment the variable by 27
 
