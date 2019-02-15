@@ -98,7 +98,7 @@ Let's do one by one.
 Logical operations that are happening on this line are:
 
 1) Create a constant node
-2) Read the value of the lion variable node
+2) Get the value of the lion variable node
 3) Add these two nodes
 4) Assign the sum to the lion variable node
 
@@ -120,7 +120,7 @@ node {
   op: "Identity"
   input: "jungle/lion"
 ```
-will tell that "jungle/lion/read" maps to second item "Read the value of the lion variable node".
+This maps to second item "Get the value of the lion variable node".
 
 As for "jungle/add/y", the value is set to 27 so it is for the first item "Create a constant node".
 ```
