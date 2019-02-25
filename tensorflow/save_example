@@ -15,7 +15,10 @@ from pathlib import Path
 import tensorflow as tf
 
 MODEL_BASE_DIR = "/tmp/ml_examples/tf/save_model"
+# Note that this directory should not exist before running this script.
+# If exists, builder.SavedModelBuilder throws AssertionError as of TensorFlow 1.12
 MODEL_DIR = "/tmp/ml_examples/tf/save_model/model"
+
 CHECKPOINT_DIR = "/tmp/ml_examples/tf/save_model/cp/"
 CHECKPOINT_PATH = CHECKPOINT_DIR + "foo"  # Directory will be chkbar .  Most files will be prefixed with "foo"
 
@@ -69,6 +72,51 @@ def example():
                                    MODEL_DIR,
                                    inputs={"x": a, "y": b},
                                    outputs={"z": c})
+
+        """
+This generates 3 files in 2 directories below:
+/tmp/ml_examples/tf/save_model/model
+/tmp/ml_examples/tf/save_model/model/saved_model.pb
+/tmp/ml_examples/tf/save_model/model/variables
+/tmp/ml_examples/tf/save_model/model/variables/variables.data-00000-of-00001
+/tmp/ml_examples/tf/save_model/model/variables/variables.index
+        
+        """
+
+    tf.reset_default_graph()
+
+    with tf.Session(graph=tf.Graph()) as sess:
+        log.info("New session created for loading the saved model.")
+        tf.saved_model.loader.load(sess, ['serve'], MODEL_DIR)
+        graph = s.graph
+
+        # Get the list of nodes
+        print("List of operations")
+        operations = s.graph.get_operations()
+        for op in operations:
+            print("\nOperation:  Type: %s. Value: %s" % (str(type(op)), str(op)))
+
+            for inp in op.inputs:
+                print("*** Input start")
+                print("    " + str(inp))
+                print("*** Input end")
+
+            for outp in op.outputs:
+                print("*** Output start")
+                print("    " + str(outp))
+                print("*** Output end")
+
+        print("List of collections")
+        collections = graph.collections
+        for c in collections:
+            print(str(c))
+
+        print("\nElements in each collection")
+        for collection in collections:
+            print("\nCollection: " + str(collection))
+            elem_list = graph.get_collection(collection)
+            for e in elem_list:
+                print(str(e))
 
 
 def main():
