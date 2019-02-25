@@ -1,0 +1,108 @@
+#!/usr/bin/env python
+"""
+An example code to demo the saving a model.
+
+References for the use of tf.saved_model.builder.SavedModelBuilder
+https://medium.com/@jsflo.dev/saving-and-loading-a-tensorflow-model-using-the-savedmodel-api-17645576527
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+from pathlib import Path
+
+import tensorflow as tf
+
+MODEL_BASE_DIR = "/tmp/ml_examples/tf/save_model"
+# Note that this directory should not exist before running this script.
+# If exists, builder.SavedModelBuilder throws AssertionError as of TensorFlow 1.12
+MODEL_DIR = "/tmp/ml_examples/tf/save_model/model"
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+
+def example():
+    """An example code.
+    """
+
+    # Create model directory if it doesn't exist
+    model_base_dir = Path(MODEL_BASE_DIR)
+    if model_base_dir.exists() is False:
+        model_base_dir.mkdir(parents=True, exist_ok=True)
+
+    tf.reset_default_graph()
+
+    with tf.variable_scope("fruit") as scope:
+        a = tf.placeholder(dtype=tf.int32, name="apple")
+        b = tf.placeholder(dtype=tf.int32, name="banana")
+        cumulative_result = tf.get_variable("cr", shape=[], dtype=tf.int32, initializer=tf.zeros_initializer)
+
+        c = tf.add(a, b)
+        current_cr = tf.assign(cumulative_result, c + cumulative_result, name="update_cr")
+
+        w = tf.get_variable("w", shape=[], dtype=tf.int32, initializer=tf.zeros_initializer)
+        w_assign = tf.assign(w, 123)
+
+    init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
+
+    with tf.Session() as s:
+
+        s.run(init_op)  # Actually assign initial value to variables
+
+        current_cr_val = s.run(current_cr, {a: 10, b: 20})
+        print("current_cr: %d" % (current_cr_val))
+
+        s.run(w_assign)
+        w_val = s.run(w)
+        print("w: %d" % (w_val))
+        # tf.saved_model.simple_save(s,
+        #                            MODEL_DIR,
+        #                            inputs={"MyApple": a, "MyBanana": b},
+        #                            outputs={"prediction": current_cr})
+
+        # The below lines are equivalent of simple_save except that it uses a custom tag "fruitTag" instead of "serve"
+        model_builder = tf.saved_model.builder.SavedModelBuilder(MODEL_DIR)
+
+        model_signature = tf.saved_model.predict_signature_def(inputs={"MyApple": a, "MyBanana": b},
+                                                               outputs={"prediction": current_cr, "w_val": w})
+
+        model_builder.add_meta_graph_and_variables(sess=s,
+                                                   tags=["fruitTag"],
+                                                   signature_def_map={'predict': model_signature})
+        model_builder.save()
+
+    tf.reset_default_graph()
+
+    with tf.Session(graph=tf.Graph()) as new_sess:
+        log.info("New session created for loading the saved model.")
+        tf.saved_model.loader.load(new_sess, ['fruitTag'], MODEL_DIR)
+        graph = s.graph
+
+        for o in graph.get_operations():
+            print(str(o))
+
+        a_name = graph.get_operation_by_name("fruit/apple")
+        b_name = graph.get_operation_by_name("fruit/banana")
+        c_name = graph.get_operation_by_name("fruit/update_cr")
+
+        # Specify the same name that you used when you created placeholders.
+        current_cr_val = new_sess.run("fruit/update_cr:0", {"fruit/apple:0": 100, "fruit/banana:0": 200})
+
+        print("current_cr: %d" % (current_cr_val))
+
+        # w_val = new_sess.run("fruit/w")
+        # print("w: %d" % (w_val))
+
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
