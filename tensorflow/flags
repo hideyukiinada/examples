@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+"""
+An example code to demo the use of TensorFlow
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2019, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+
+import tensorflow as tf
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+
+FLAGS = tf.app.flags.FLAGS  # Set up at the end of the script
+
+
+def main(argv):
+    """
+    Define the high-level functionality of the application
+
+    Parameters
+    ----------
+    argv: list
+        List of arguments
+    """
+
+    print("price: %f" % (FLAGS.price))
+    print("quantity %d" % (FLAGS.quantity))
+    print("cultivar: %s" % (FLAGS.cultivar))
+    print("coupon_discount: %s" % (str(FLAGS.coupon_discount)))
+
+    if FLAGS.coupon_discount:
+        total = FLAGS.price * FLAGS.quantity * 0.8
+    else:
+        total = FLAGS.price * FLAGS.quantity
+
+    print("total sold: %f" % (total))
+
+
+if __name__ == "__main__":
+    # name, value, help
+    tf.app.flags.DEFINE_float('price', 0.60, 'Price for one apple')
+    tf.app.flags.DEFINE_integer('quantity', 2, 'Number of apples to sold in a single transaction')
+    tf.app.flags.DEFINE_string('cultivar', 'Red Delicious', 'Cultivar of the apple sold')
+    tf.app.flags.DEFINE_boolean('coupon_discount', False, '20% discount with a coupon applied')
+
+    tf.app.run()
