@@ -179,7 +179,9 @@ If I forget to use different block_name and also set reuse to tf.AUTO_REUSE, mul
 the same weights, which is clearly not what I want.
 
 ## Second solution
-If you want to explicitly control reuse of variable, here is the second solution:
+If you want to explicitly control reuse of variable, you can explicitly say "reuse=True" the second time you want to use the variable.  
+
+Here is the second solution:
 
 ```
 def add_tax_and_shipping(price, reuse=False):
@@ -198,6 +200,11 @@ def add_tax_and_shipping(price, reuse=False):
 def main():
     book_price = add_tax_and_shipping(10.0)
     sketchpad_price = add_tax_and_shipping(20.0, reuse=True)
+```
+
+For sketch_pad_price, the code evaluates reset to True:
+```
+with tf.variable_scope("other_charge", reuse=True) as scope
 ```
 
 This outputs the same result.
