@@ -21,8 +21,10 @@ def add_tax_and_shipping(price):
 
     total_price = price * (1.0 + tax) + shipping
     return total_price
+```
 
-
+This function is called to calculate the total price of a book in the below code:
+```
 def main():
     book_price = add_tax_and_shipping(10.0)
 
