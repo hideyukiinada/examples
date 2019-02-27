@@ -3,10 +3,10 @@ By Hide Inada
 
 <img src="../assets/images/reuse_variable.png" width="300px">
 
-If you are new to TensorFlow, variables in TensorFlow look complicated and scary.  Once you get a hang of it, you realize that it is not as complicated as it first looked.  However, you may not be familiar with the concept of "reuse".
-In this article, I'd like to clarify what "reuse" mean in TensorFlow variables.
-
-Let' think of a case where you want to write a function for calculating the total price of an item by adding tax and shipping.  
+If you are new to TensorFlow, variables in TensorFlow may look complicated and overwhelming, especially if you see it used for defining a network layer weight.  Once you get a hang of it, you realize that it is not as scary as it first looked.  However, some of you may not be familiar with the concept of "reuse", which is a very useful way of using variables. In this article, I'd like to clarify what "reuse" mean for TensorFlow variables.
+<hr>
+Let's think of a case where you want to write a function for calculating the total price of an item by adding tax and shipping.  
+In this scenario, tax is set to 5% of the unit price of an item, and the shipping charge is fixed at $10 per item.
 
 <img src="../assets/images/book_calc.png" width="300px">
 
@@ -55,7 +55,9 @@ Price of the book: 20.500000
 
 This is all good.
 
-Then you decided to add one more item for sketchpad to calculate tax and shipping.  Your intent is
+You may wonder why this logic is in a function, but for now, let's just assume that this is because of you are thinking of adding more complicated logic to calculate tax and shipping (e.g. by state, by city) later on.
+
+Then you decided to pass a sketch pad to the function to calculate tax and shipping.  Your intent is
 to use the same tax rate and shipping charge as the book:
 
 ```
@@ -63,23 +65,19 @@ to use the same tax rate and shipping charge as the book:
     sketchpad_price = add_tax_and_shipping(20.0)
 ``` 
 
-When you ran it, you saw:
+When you run this, you will see:
 ```
 ValueError: Variable other_charge/tax already exists, disallowed. Did you mean to set reuse=True or reuse=tf.AUTO_REUSE in VarScope? 
 ```
 
-Note that in the function there are two variables defined:
-* tax
-* shipping
-
 The reason you are getting this error is because TensorFlow prohibits calling the get_variable function for the same variable
-again.
+again by default.
 
 How can you work around this?
 
 Well, TensorFlow has a special keyword called 'reuse'.
 
-you specify the reuse keyword in the variable_scope.  Let's see what happens if you set this to True:
+You specify the reuse keyword in the variable_scope.  Let's see what happens if you set this to True:
 ```
     with tf.variable_scope("other_charge", reuse=True) as scope:  # This line causes an exception to be thrown on the next line!
         tax = tf.get_variable("tax", (), dtype=tf.float32,
@@ -89,20 +87,22 @@ you specify the reuse keyword in the variable_scope.  Let's see what happens if 
                                    initializer=tf.constant_initializer(10.0))  # $10
 ```
 
-Unfortunately, you get:
+Unfortunately, this time you will get:
 ```
 ValueError: Variable other_charge/tax does not exist, or was not created with tf.get_variable(). Did you mean to set reuse=tf.AUTO_REUSE in VarScope?
 ```
 
+So in order to use reuse=True, the variable has to already exist.
+
 There are two solutions for this:
 
-First solution is to change the reuse value from True to tf.AUTO_REUSE
+First solution is to change the reuse argument value from True to tf.AUTO_REUSE
 
 ```
    with tf.variable_scope("other_charge", reuse=tf.AUTO_REUSE) as scope: 
 ```
 
-With this change in place, let's add some code to main that calculates the total price of sketchpad and double the tax:
+With this change in place, let's add some code to main() that calculates the total price of the sketch pad and also doubling the tax rate:
 ```
 def main():
     book_price = add_tax_and_shipping(10.0)
@@ -137,7 +137,7 @@ def main():
         print("Price of the sketchpad: %f" % (price))
 ```
 
-When you run this, you get:
+When you run this, you will get:
 
 ```
 Price of the book: 20.500000
@@ -147,7 +147,7 @@ Price of the book: 21.000000
 Price of the sketchpad: 32.000000
 ```
 
-So now you know that the new tax rate is applied to both book and the sketchpad.
+So now you know that the new tax rate is applied to both the book and the sketch pad correctly.
 
 tf.AUTO_REUSE is convenient, but you also have to be careful for not inadvertently sharing variables.
 For example, one of my CIFAR-10 scripts defines a convolutional layer using a function below:
@@ -171,8 +171,8 @@ def single_conv_block(tens, block_name, input_filters, output_filters, kernel_si
         return activation
 ```
 
-If I forgot to use different block_name, and also set tf.AUTO_REUSE, multiple convolutional layers will end up using
-the same weights, which I clearly don't want.
+If I forget to use different block_name and also set reuse to tf.AUTO_REUSE, multiple convolutional layers will end up using
+the same weights, which is clearly not what I want.
 
 So if you want to explicitly define reuse of variable, here is the second solution:
 
