@@ -77,7 +77,7 @@ How can you work around this?
 
 Well, TensorFlow has a special keyword called 'reuse'.
 
-You specify the reuse keyword in the variable_scope.  Let's see what happens if you set this to True:
+You specify the reuse keyword in the variable_scope where a variable is defined (tf.variable()).  Let's see what happens if you set this parameter to True:
 ```
     with tf.variable_scope("other_charge", reuse=True) as scope:  # This line causes an exception to be thrown on the next line!
         tax = tf.get_variable("tax", (), dtype=tf.float32,
@@ -96,7 +96,7 @@ So in order to use reuse=True, the variable has to already exist.
 
 There are two solutions for this:
 
-First solution is to change the reuse argument value from True to tf.AUTO_REUSE
+First solution is to change the reuse parameter value from True to tf.AUTO_REUSE
 
 ```
    with tf.variable_scope("other_charge", reuse=tf.AUTO_REUSE) as scope: 
