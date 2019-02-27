@@ -24,7 +24,7 @@ def add_tax_and_shipping(price):
     """Add tax and shipping
     """
 
-    with tf.variable_scope("other_charge") as scope:
+    with tf.variable_scope("other_charge", reuse=tf.AUTO_REUSE) as scope:
         tax = tf.get_variable("tax", (), dtype=tf.float32,
                               initializer=tf.constant_initializer(0.05))  # 0.05%
 
@@ -37,7 +37,7 @@ def add_tax_and_shipping(price):
 
 def main():
     book_price = add_tax_and_shipping(10.0)
-    sketchpad_price = add_tax_and_shipping(20.0)  # This throws an exception!
+    sketchpad_price = add_tax_and_shipping(20.0)
 
     init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
 

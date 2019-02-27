@@ -24,7 +24,7 @@ def add_tax_and_shipping(price):
     """Add tax and shipping
     """
 
-    with tf.variable_scope("other_charge") as scope:
+    with tf.variable_scope("other_charge", reuse=tf.AUTO_REUSE) as scope:
         tax = tf.get_variable("tax", (), dtype=tf.float32,
                               initializer=tf.constant_initializer(0.05))  # 0.05%
 
@@ -37,7 +37,7 @@ def add_tax_and_shipping(price):
 
 def main():
     book_price = add_tax_and_shipping(10.0)
-    sketchpad_price = add_tax_and_shipping(20.0)  # This throws an exception!
+    sketchpad_price = add_tax_and_shipping(20.0)
 
     init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
 
@@ -46,6 +46,26 @@ def main():
 
         price = s.run(book_price)
         print("Price of the book: %f" % (price))
+
+        price = s.run(sketchpad_price)
+        print("Price of the sketchpad: %f" % (price))
+
+    # Try to double tax!
+    graph = tf.get_default_graph()
+    tax = graph.get_tensor_by_name("other_charge/tax:0")
+
+    print("Doubling tax")
+    double_tax = tf.assign(tax, tax * 2.0)
+    with tf.Session() as s:
+        s.run(init_op)  # Actually assign initial value to variables
+
+        s.run(double_tax)
+
+        price = s.run(book_price)
+        print("Price of the book: %f" % (price))
+
+        price = s.run(sketchpad_price)
+        print("Price of the sketchpad: %f" % (price))
 
 
 if __name__ == "__main__":

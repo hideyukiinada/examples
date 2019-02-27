@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
 
 
-def tax_and_shipping(price, reuse=False):
+def add_tax_and_shipping(price, reuse=False):
     """Add tax and shipping
     """
 
@@ -36,8 +36,8 @@ def tax_and_shipping(price, reuse=False):
 
 
 def main():
-    book_price = tax_and_shipping(10.0)
-    sketchpad_price = tax_and_shipping(20.0, reuse=True)
+    book_price = add_tax_and_shipping(10.0)
+    sketchpad_price = add_tax_and_shipping(20.0, reuse=True)
 
     init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
 
