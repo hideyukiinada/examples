@@ -201,9 +201,9 @@ I didn't cover this, but there is one more option using scope.reuse_variables() 
 
 # Final words
 Here is the summary
-* reuse means sharing the same variable between different callers
-* If you want to share the variable, the second caller explicitly specifies "reuse=True"
-* or declare the variable scope as "tf.AUTO_REUSE"
+* reuse means sharing the same variable between different objects
+* If you want to share the variable, the second object needs to explicitly specify "reuse=True" in the variable scope of the variable that it wants to use
+* or set the variable scope to "reuse=tf.AUTO_REUSE"
 
 If you have any feedback, please feel free to reach out to me.
 
