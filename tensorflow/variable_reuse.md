@@ -77,7 +77,7 @@ How can you work around this?
 
 Well, TensorFlow has a special keyword called 'reuse'.
 
-You specify the reuse keyword in the variable_scope where a variable is defined (tf.variable()).  Let's see what happens if you set this parameter to True:
+You specify the reuse parameter in the variable_scope where a variable is defined (tf.variable()).  Let's see what happens if you set this parameter to True:
 ```
     with tf.variable_scope("other_charge", reuse=True) as scope:  # This line causes an exception to be thrown on the next line!
         tax = tf.get_variable("tax", (), dtype=tf.float32,
@@ -94,8 +94,9 @@ ValueError: Variable other_charge/tax does not exist, or was not created with tf
 
 So in order to use reuse=True, the variable has to already exist.
 
-There are two solutions for this:
+Let's take a look at solutions.
 
+## First solution
 First solution is to change the reuse parameter value from True to tf.AUTO_REUSE
 
 ```
@@ -174,7 +175,8 @@ def single_conv_block(tens, block_name, input_filters, output_filters, kernel_si
 If I forget to use different block_name and also set reuse to tf.AUTO_REUSE, multiple convolutional layers will end up using
 the same weights, which is clearly not what I want.
 
-So if you want to explicitly define reuse of variable, here is the second solution:
+## Second solution
+If you want to explicitly control reuse of variable, here is the second solution:
 
 ```
 def add_tax_and_shipping(price, reuse=False):
