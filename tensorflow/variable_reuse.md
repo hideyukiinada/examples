@@ -199,9 +199,18 @@ This outputs the same result.
 
 I didn't cover this, but there is one more option using scope.reuse_variables() which is discussed in [1]
 
+# Final words
+Here is the summary
+* reuse means sharing the same variable between different callers
+* If you want to share the variable, the second caller explicitly specifies "reuse=True"
+* or declare the variable scope as "tf.AUTO_REUSE"
+
+If you have any feedback, please feel free to reach out to me.
+
 # References
-[1] TensorFlow team. Variables. https://www.tensorflow.org/guide/variables
-[2] TensorFlow team. tf.variable_scope. https://www.tensorflow.org/api_docs/python/tf/variable_scope
+&#91;1&#93; TensorFlow team. Variables. https://www.tensorflow.org/guide/variables
+
+&#91;2&#93; TensorFlow team. tf.variable_scope. https://www.tensorflow.org/api_docs/python/tf/variable_scope
 
 
  
