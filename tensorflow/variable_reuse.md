@@ -1,6 +1,11 @@
 # What does variable reuse mean in TensorFlow?
 By Hide Inada
 
+If you are new to TensorFlow, variables in TensorFlow look complicated and scary.  Once you get a hang of it, you realize that it is not as complicated as it first looked.  However, you may not be familiar with the concept of "reuse".
+In this article, I'd like to clarify what "reuse" mean in TensorFlow variables.
+
+Let' think of a case where you want to write a function for calculating the total price of an item by adding tax and shipping.  Here is the code:
+
 ```
 
 def add_tax_and_shipping(price):
