@@ -202,14 +202,14 @@ def main():
     sketchpad_price = add_tax_and_shipping(20.0, reuse=True)
 ```
 
-For sketch_pad_price, the code evaluates reset to True:
+For sketch_pad_price, the code evaluates the reuse parameter to True:
 ```
 with tf.variable_scope("other_charge", reuse=True) as scope
 ```
 
 This outputs the same result.
 
-I didn't cover this, but there is one more option using scope.reuse_variables() which is discussed in [1]
+I didn't cover in this article, but there is one more option using scope.reuse_variables() which is discussed in [1]
 
 # Final words
 Here is the summary
