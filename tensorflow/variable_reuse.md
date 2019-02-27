@@ -3,7 +3,7 @@ By Hide Inada
 
 <img src="../assets/images/reuse_variable.png" width="300px">
 
-If you are new to TensorFlow, variables in TensorFlow may look complicated and overwhelming, especially if you see it used for defining a network layer weight.  Once you get a hang of it, you realize that it is not as scary as it first looked.  However, some of you may not be familiar with the concept of "reuse", which is a very useful way of using variables. In this article, I'd like to clarify what "reuse" mean for TensorFlow variables.
+If you are new to TensorFlow, variables in TensorFlow may look complicated and overwhelming, especially if you see it used for defining a network layer weight.  Once you get a hang of it, you realize that it is not as scary as it first looked.  However, some of you may not be familiar with the concept of "reuse", which is a very useful way of using variables. In this article, I'd like to clarify what "reuse" means for TensorFlow variables.
 <hr>
 Let's think of a case where you want to write a function for calculating the total price of an item by adding tax and shipping.  
 In this scenario, tax is set to 5% of the unit price of an item, and the shipping charge is fixed at $10 per item.
