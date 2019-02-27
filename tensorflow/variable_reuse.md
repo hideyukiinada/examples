@@ -47,7 +47,7 @@ if __name__ == "__main__":
     main()
 
 ```
-When you run it, you get:
+When you run this, you will get:
 
 ```
 Price of the book: 20.500000
@@ -55,9 +55,9 @@ Price of the book: 20.500000
 
 This is all good.
 
-You may wonder why this logic is in a function, but for now, let's just assume that this is because of you are thinking of adding more complicated logic to calculate tax and shipping (e.g. by state, by city) later on.
+_You may wonder why this logic is in a function, but for now, let's just assume that this is because of you are thinking of adding more complicated logic to calculate tax and shipping (e.g. by state, by city) later on._
 
-Then you decided to pass a sketch pad to the function to calculate tax and shipping.  Your intent is
+Next you decided to pass a sketch pad to the function to calculate tax and shipping.  Your intent is
 to use the same tax rate and shipping charge as the book:
 
 ```
