@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+"""
+An example code to demo the use of checkpoint.
+This increments the value of a by 10 each time you run the script.
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2018, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+
+import os
+import logging
+from pathlib import Path
+
+import tensorflow as tf
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))  # Change the 2nd arg to INFO to suppress debug logging
+
+
+def example():
+    """An example code.
+    """
+
+    tf.reset_default_graph()
+
+    # Add lion to the default graph
+    with tf.variable_scope("jungle") as scope:
+        lion_ref = tf.get_variable("lion", [], dtype=tf.float32, initializer=tf.constant_initializer(1))
+
+    graph1 = tf.get_default_graph()
+
+    graph2 = tf.Graph()
+    with graph2.as_default():
+        with tf.variable_scope("river") as scope:
+            crocodile_ref = tf.get_variable("crocodile", [], dtype=tf.float32, initializer=tf.constant_initializer(2))
+            init2_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
+
+    # Assign to default again
+    with tf.variable_scope("jungle") as scope:
+        tiger_ref = tf.get_variable("tiger", [], dtype=tf.float32, initializer=tf.constant_initializer(3))
+
+    init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
+
+    with tf.Session(graph=graph1) as s:
+        s.run(init_op)  # Actually assign initial value to variables
+
+        print("First graph")
+        for o in s.graph.get_operations():
+            print(o.name)
+
+        a_val = s.run(lion_ref)
+        print(a_val)
+
+    with tf.Session(graph=graph2) as s:
+        s.run(init2_op)  # Actually assign initial value to variables
+
+        print("Second graph")
+        for o in s.graph.get_operations():
+            print(o.name)
+
+        a_val = s.run(crocodile_ref)
+        print(a_val)
+
+
+def main():
+    """Defines an application's main functionality"""
+    example()
+
+
+if __name__ == "__main__":
+    main()
