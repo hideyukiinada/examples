@@ -2,9 +2,6 @@
 """
 An example code to demo the saving a model.
 
-References for the use of tf.saved_model.builder.SavedModelBuilder
-https://medium.com/@jsflo.dev/saving-and-loading-a-tensorflow-model-using-the-savedmodel-api-17645576527
-
 __author__ = "Hide Inada"
 __copyright__ = "Copyright 2018, Hide Inada"
 __license__ = "The MIT License"
@@ -35,6 +32,11 @@ def example():
     if model_base_dir.exists() is False:
         model_base_dir.mkdir(parents=True, exist_ok=True)
 
+    # Create model directory if it doesn't exist
+    model_dir = Path(MODEL_DIR)
+    if model_dir.exists() is False:
+        model_dir.mkdir(parents=True, exist_ok=True)
+
     tf.reset_default_graph()
 
     with tf.variable_scope("fruit") as scope:
@@ -48,6 +50,8 @@ def example():
         w = tf.get_variable("w", shape=[], dtype=tf.int32, initializer=tf.zeros_initializer)
         w_assign = tf.assign(w, 123)  # We will check this value after loading.
 
+        w_const = tf.constant(456, name="w_const")
+
     init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
 
     with tf.Session() as s:
@@ -57,35 +61,42 @@ def example():
         current_cr_val = s.run(current_cr, {a: 10, b: 20})
         print("current_cr: %d" % (current_cr_val))
 
-        s.run(w_assign) # w = 123
+        s.run(w_assign)  # w = 123
         w_val = s.run(w)
         print("w: %d" % (w_val))
-        # tf.saved_model.simple_save(s,
-        #                            MODEL_DIR,
-        #                            inputs={"MyApple": a, "MyBanana": b},
-        #                            outputs={"prediction": current_cr})
 
-        # The below lines are equivalent of simple_save except that it uses a custom tag "fruitTag" instead of "serve"
-        model_builder = tf.saved_model.builder.SavedModelBuilder(MODEL_DIR)
+        gr = tf.get_default_graph()
+        gd = gr.as_graph_def()
+        data = gd.SerializeToString()
 
-        model_signature = tf.saved_model.predict_signature_def(inputs={"MyApple": a, "MyBanana": b},
-                                                               outputs={"prediction": current_cr, "w_val": w})
-
-        model_builder.add_meta_graph_and_variables(sess=s,
-                                                   tags=["fruitTag"],
-                                                   signature_def_map={'predict': model_signature})
-        model_builder.save()
+        with open(model_dir / Path("my_model.pb"), "wb") as f:
+            f.write(data)
 
     tf.reset_default_graph()
 
-    graph = tf.Graph()
-    with tf.Session(graph=graph) as new_sess:
+    with tf.Session() as new_sess:
         log.info("New session created for loading the saved model.")
-        tf.saved_model.loader.load(new_sess, ['fruitTag'], MODEL_DIR)
 
-        tens = graph.get_tensor_by_name("fruit/w:0")
+        with open(model_dir / Path("my_model.pb"), "rb") as f:
+            buf = f.read()
 
-        w_val = new_sess.run(tens)
+        gd.ParseFromString(buf)
+
+        tf.import_graph_def(gd)
+
+        gr2 = tf.get_default_graph()
+
+        for o in gr2.get_operations():
+            print(str(o.name))
+
+        tens = gr2.get_tensor_by_name("import/fruit/w_const:0")  # Note "import" namespace
+        w_val = new_sess.run(tens) # This works as constant is stored in the graph
+
+        print("Read from the loaded model: w_const: %d" % (w_val))
+
+        tens = gr2.get_tensor_by_name("import/fruit/w:0")  # Note "import" namespace
+
+        w_val = new_sess.run(tens)  # This line throws an error "Attempting to use uninitialized value import/fruit/w"
 
         print("w: %d" % (w_val))
 
