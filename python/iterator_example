@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+A Python example code
+
+Fibonacci sequence
+0, 1, 1, 2, 3, 5, 8, 13, 21 ...
+
+Steps
+Define a class that implements __iter__ and __next_ methods
+__iter__ should return the reference to the object itself
+__next__ should return the new value
+On the caller side, do the following:
+Instantiate the class
+call iter() with the instantiated class as an argument (e.g. iter(my_iter_class)). Save the return value of this.
+call next() with the return value from above.
+
+References
+----------
+A sequence of increasing number example discussed in:
+https://www.w3schools.com/python/python_iterators.asp
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2019, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+import subprocess
+import time
+
+
+class Fibonacci():
+
+    def __init__(self, max_num):
+        self.max_num = max_num
+
+    def __iter__(self):
+        self.index = 0
+        self.prev = 0
+        self.prev_prev = 0
+
+        return self
+
+    def __next__(self):
+
+        if self.index == 0:
+            self.prev_prev = 0
+            self.index += 1
+            return 0
+        elif self.index == 1:
+            self.prev = 1
+            self.index += 1
+            return 1
+
+        sum = self.prev_prev + self.prev
+
+        if sum > self.max_num:
+            raise StopIteration()
+
+        self.prev_prev = self.prev
+        self.prev = sum
+        self.index += 1
+
+        return sum
+
+
+def main():
+    f = iter(Fibonacci(50))  # Note that iter() is called as a top-level function.
+
+    # Alternate code:  This works except that you need to handle StopIteration that is raised.
+    # If you use a for loop, you do not need an explicit handling of StopIteration
+    # while True:
+    #     num = next(f)  # Note that next() is called as a top-level function.
+    #     print(num)
+
+    for num in f:
+        print(num)
+
+
+if __name__ == "__main__":
+    main()
