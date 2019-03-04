@@ -52,16 +52,16 @@ class Fibonacci():
             self.index += 1
             return 1
 
-        sum = self.prev_prev + self.prev
+        sum_of_two_nums = self.prev_prev + self.prev
 
-        if sum > self.max_num:
+        if sum_of_two_nums > self.max_num:
             raise StopIteration()
 
         self.prev_prev = self.prev
-        self.prev = sum
+        self.prev = sum_of_two_nums
         self.index += 1
 
-        return sum
+        return sum_of_two_nums
 
 
 def main():
