@@ -32,22 +32,35 @@ def example():
     a = [1., 3., 5.]
     d = tf.data.Dataset.from_tensor_slices(a)
 
-    multiplier = tf.placeholder(tf.float32, shape=())  # This value is set by feed_dict later.
-    d2 = d.map(lambda e: e * multiplier)
+    b = [2., 4., 6.]
+    e = tf.data.Dataset.from_tensor_slices(b)
 
-    iter = d2.make_initializable_iterator()
+    it = tf.data.Iterator.from_structure(output_shapes=d.output_shapes, output_types=d.output_types)
+    next_op = it.get_next()
 
-    next_a = iter.get_next()
+    initializer_op = it.make_initializer(d)
+    reinitializer_op = it.make_initializer(e)
 
     init_op = tf.global_variables_initializer()  # Set up operator to assign all init values to variables
 
     with tf.Session() as s:
         s.run(init_op)  # Actually assign initial value to variables
-        s.run(iter.initializer, feed_dict={multiplier: 2.0})
+        s.run(initializer_op)
 
         while True:
             try:
-                next_a_val = next_a.eval()
+                next_a_val = next_op.eval()
+                print(next_a_val)
+
+            except tf.errors.OutOfRangeError:
+                print("All data in a have been returned by the iterator")
+                break
+
+        s.run(reinitializer_op)
+
+        while True:
+            try:
+                next_a_val = next_op.eval()
                 print(next_a_val)
 
             except tf.errors.OutOfRangeError:
