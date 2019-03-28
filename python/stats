@@ -1,0 +1,138 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Statics-related examples
+
+__author__ = "Hide Inada"
+__copyright__ = "Copyright 2019, Hide Inada"
+__license__ = "The MIT License"
+__email__ = "hideyuki@gmail.com"
+"""
+import math
+import time
+
+# def product(iterable):
+#     l = list(iterable)
+#     list_size = len(l)
+#     p = 1
+#     for i, e in enumerate(l)):
+#         p *= e
+
+def permutation(n, k):
+    """
+
+    Parameters
+    ----------
+    n: int
+        Size of the set
+    k: int
+        Number of elements
+
+    Returns
+    -------
+    Number of sequences without repetition
+
+    Note
+    ----
+    permutation is also supported in itertools. An example: len(list(itertools.permutations([3, 2, 1],2)))
+    factorial is included in math package as math.factorial(number)
+    An equivalent in Gsheet is permut(n, k)
+    """
+
+    num_loops = k
+
+    product = 1
+    for i, e in enumerate(range(num_loops)):
+        product *= (n-i)
+
+    return product
+
+def combination(n, k):
+    """
+
+    Parameters
+    ----------
+    n: int
+        Size of the set
+    k: int
+        Number of elements
+
+    Returns
+    -------
+    Number of combinations for the given n and k
+
+    Note
+    ----
+    An equivalent in Gsheet is combin(n, k)
+    """
+
+    c = permutation(n, k) / math.factorial(k)
+
+    return c
+
+def binomial_distribution(successes, trials, probability, return_cumulative):
+    """
+
+    Parameters
+    ----------
+    successes: int
+        Number of successes
+    trials: int
+        Number of trials
+    probability: float
+        Probability of success
+    return_cumulative: bool
+        Return cumulative sum of distribution for all successes below the specified number of successes and
+        the specified number of successes
+
+    Returns
+    -------
+    result: float
+        probability
+
+    Note
+    ----
+    An equivalent in Gsheet is binomdist()
+    -------
+
+    """
+
+    prob_failure = 1.0 - probability
+
+    if return_cumulative is False:
+        num_failures = trials - successes
+        prob = combination(trials, successes) * probability**successes * (prob_failure)**(num_failures)
+    else:
+        cumulative_sum = 0
+
+        for i in range(successes + 1):
+            num_failures = trials - i
+            prob = combination(trials, i) * probability ** i * (prob_failure) ** (num_failures)
+            cumulative_sum += prob
+
+        prob = cumulative_sum
+    return prob
+
+def example():
+    k = 2
+    for n in range(2, 7):
+        p = permutation(n, k)
+
+        print("%dP%d = %d" % (n, k, p))
+
+        c = combination(n, k)
+        print("%dC%d = %d" % (n, k, c))
+
+    print("Binomial distribution")
+    p = binomial_distribution(successes=1, trials=10, probability=0.1, return_cumulative=False)
+    print(p)
+
+    p = binomial_distribution(successes=3, trials=10, probability=0.1, return_cumulative=True)
+    print(p)
+
+def main():
+    example()
+
+
+if __name__ == "__main__":
+    main()

@@ -37,6 +37,10 @@ def example():
     """An example.
     """
 
+    parent_dir = Path(MODEL_PATH).parent
+    if parent_dir.exists() is False:
+        parent_dir.mkdir(parents=True, exist_ok=True)
+
     text1 = """this is a pen. I love the pen."""
 
     word_list = gensim.utils.simple_preprocess(text1)

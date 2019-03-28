@@ -52,7 +52,7 @@ from keras.layers import Flatten
 
 import matplotlib.pyplot as plt
 
-TRAINING_DATA_SET_SIZE = 10000
+VALIDATION_DATA_SET_SIZE = 10000 # Initial 10000 of training data.  Remaning 15K will be the training data
 NUM_WORDS_TO_LOAD = 10000
 NUM_WORDS_PER_REVIEW = 256
 
@@ -116,11 +116,11 @@ def load_data():
 
     log.info(x_train[0])
 
-    x_val = x_train[:TRAINING_DATA_SET_SIZE]
-    partial_x_train = x_train[TRAINING_DATA_SET_SIZE:]
+    x_val = x_train[:VALIDATION_DATA_SET_SIZE]
+    partial_x_train = x_train[VALIDATION_DATA_SET_SIZE:]
 
-    y_val = y_train[:TRAINING_DATA_SET_SIZE]
-    partial_y_train = y_train[TRAINING_DATA_SET_SIZE:]
+    y_val = y_train[:VALIDATION_DATA_SET_SIZE]
+    partial_y_train = y_train[VALIDATION_DATA_SET_SIZE:]
 
     return (partial_x_train, partial_y_train), (x_val, y_val), (x_test, y_test)
 
